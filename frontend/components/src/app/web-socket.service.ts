@@ -11,8 +11,12 @@ export class WebSocketService {
   constructor() {
     this.webSocket = new WebSocket(`wss://${window.location.href}/`);
 
-    this.webSocket.onmessage = function (event) {
-      this.data = 
+    this.webSocket.onmessage = (event) => {
+      let newData: object = JSON.parse(event.data);
+      this.data = {
+        ...this.data,
+        ...newData
+      };
     }
   }
 }
