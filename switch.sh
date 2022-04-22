@@ -25,7 +25,7 @@ frontend() {
     source bin/activate
 
     cd components/src/app/ || exit
-    ng build --base-href . --output-url $BACKEND/project/app/static/ang/ --output-hashing none --watch
+    ng build --base-href . --output-path $BACKEND/project/app/static/ang/ --output-hashing none --watch
 }
 
 
