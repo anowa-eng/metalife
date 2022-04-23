@@ -16,6 +16,9 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
+from app.views import *
+
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('', index_view),
+    path('/api/currentroom', current_room)
 ]

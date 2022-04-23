@@ -1,5 +1,6 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 # Logs
 logs
 *.log
@@ -113,3 +114,8 @@ dist
 /frontend/venv/*
 !/frontend/venv/components
 >>>>>>> 8704c3b5 (Change .gitignore)
+=======
+*
+!/components/
+!/components/*
+>>>>>>> 08132062 (Change .gitignore)
