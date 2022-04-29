@@ -20,5 +20,5 @@ from app.views import *
 
 urlpatterns = [
     path('', index_view),
-    path('/api/currentroom', current_room)
+    path('api/currentroom', current_room)
 ]
