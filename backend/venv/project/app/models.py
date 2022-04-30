@@ -6,3 +6,5 @@ class User(models.Model):
     password = models.TextField()
 class UserProfile(models.Model):
     profile_picture = models.ImageField(upload_to='media/')
+
+    user = models.ForeignKey(User, on_delete=User)
