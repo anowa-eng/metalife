@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-export NODE_PATH='/workspace/metalife/frontend/venv/lib/node_modules'
-export NPM_CONFIG_PREFIX='/workspace/metalife/frontend/venv'
-export npm_config_prefix='/workspace/metalife/frontend/venv'
-exec 'venv/bin/node' "$@"
