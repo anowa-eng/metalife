@@ -5,10 +5,12 @@ import { HttpClientModule } from '@angular/common/http';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { SvgViewComponent } from './svg-view/svg-view.component';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    SvgViewComponent
   ],
   imports: [
     BrowserModule,
