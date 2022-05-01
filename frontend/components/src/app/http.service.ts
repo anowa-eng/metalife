@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 
-import { HttpClient, HttpRequest, HttpEvent } from '@angular/common/http';
+import { HttpClient, HttpRequest, HttpResponse } from '@angular/common/http';
 
 import { Observable } from 'rxjs';
 
@@ -14,7 +14,9 @@ export class HttpService {
     this.httpClient = httpClient;
   }
 
-  request(req: HttpRequest<any>): Observable<HttpEvent<any>> {
-    return this.httpClient.request<any>(req);
+  request(req: HttpRequest<any>): Observable<HttpResponse<any>> {
+    return this.httpClient.request<any>(req, {
+      observe: 'response'
+    });
   }
 }
