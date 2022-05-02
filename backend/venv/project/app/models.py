@@ -17,3 +17,6 @@ class InvitedUser(models.Model):
     room = models.ForeignKey(Room, on_delete=models.CASCADE)
 class UserPosition(models.Model):
     x = models.PositiveBigIntegerField()
+    y = models.PositiveBigIntegerField()
+
+    room = models.ForeignKey(Room, on_delete=models.CASCADE)
