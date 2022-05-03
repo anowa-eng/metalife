@@ -20,5 +20,6 @@ from app.views import *
 
 urlpatterns = [
     path('', index_view),
-    path('api/currentroom', current_room)
+    path('api/current-room', current_room),
+    path('api/get-initial-room-data', get_initial_room_data)
 ]
