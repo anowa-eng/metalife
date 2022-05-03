@@ -20,7 +20,10 @@ backend() {
 
 frontend() {
   cd $FRONTEND/components/src/app/ || exit
-  if [[ $0 == 'build' ]]; then
-    ng build --base-href . --output-path $BACKEND/app/static/ang/ --output-hashing none --watch
-  fi
+
+  while getopts 'b'; do
+      if [[ $ opt == 'b' ]]; then
+          ng build --base-href . --output-path $BACKEND/app/static/ang/ --output-hashing none --watch
+      fi
+  done
 }
