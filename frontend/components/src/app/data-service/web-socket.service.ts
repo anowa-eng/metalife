@@ -17,7 +17,7 @@ export class WebSocketService {
 
   data: object;
 
-  webSocket: typeof webSocket;
+  webSocket!: ReturnType<typeof webSocket>;
 
   private currentRoomId?: number | null;
 

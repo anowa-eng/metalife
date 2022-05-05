@@ -36,16 +36,24 @@ def get_initial_room_data(req):
                 user_position_mapping_function,
                 room_user
             ))[0]
-            user = list(filter(
-                user_profile
-            ))
+            user_id = room_user.user.id
 
             user_data = {
                 'position': user_position,
-                'user': dict(user)
+                'user_id': user_id
             }
             initial_data.append(user_data)
     else:
         initial_data = []
 
     return HttpResponse(json.dumps(initial_data))
+def get_user(req, id):
+    user_list = User.objects.filter(pk=id)
+    if user_list:
+        user = user_list[0]
+
+        user_data = json.dumps(dict(user))
+    else:
+        user_data = ''
+    
+    return HttpResponse(user_data)
