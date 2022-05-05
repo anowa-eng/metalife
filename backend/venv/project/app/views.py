@@ -36,9 +36,7 @@ def get_initial_room_data(req):
                 user_position_mapping_function,
                 room_user
             ))[0]
-            user = list(filter(
-                user_profile
-            ))
+            user_id = room_user.user.id
 
             user_data = {
                 'position': user_position,
