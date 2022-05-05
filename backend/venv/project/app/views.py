@@ -40,10 +40,11 @@ def get_initial_room_data(req):
 
             user_data = {
                 'position': user_position,
-                'user': dict(user)
+                'user_id': user_id
             }
             initial_data.append(user_data)
     else:
         initial_data = []
 
     return HttpResponse(json.dumps(initial_data))
+def 
