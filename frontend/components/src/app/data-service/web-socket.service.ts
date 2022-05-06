@@ -1,21 +1,22 @@
 import { Injectable } from '@angular/core';
 
-import { HttpService } from './http.service';
+import { HttpService } from '../http.service';
 
 import { HttpRequest, HttpResponse } from '@angular/common/http';
 
-import { EventEmitter } from 'stream';
+import { EventEmitter } from '@angular/core';
 
 // RxJS imports
 import { webSocket } from 'rxjs/webSocket';
+import { UserPositionData } from './user-position-data.type';
 
 @Injectable({
   providedIn: 'root'
 })
 export class WebSocketService {
-  private eventEmitter: EventEmitter;
+  private eventEmitter: EventEmitter<any>;
 
-  data: object;
+  data: UserPositionData;
 
   webSocket!: ReturnType<typeof webSocket>;
 
@@ -27,7 +28,7 @@ export class WebSocketService {
 
     this.eventEmitter = new EventEmitter();
 
-    this.data = {};
+    this.data = [];
 
     this.setCurrentRoomId();
 
@@ -39,21 +40,30 @@ export class WebSocketService {
       this.webSocket = webSocket(`wss://ws/room/${this.currentRoomId}`);
 
       this.webSocket
-        .subscribe(() => {})
+        .subscribe({
+          next: (val: any) => {
+            let newData = JSON.parse(val);
+            this.data = [
+              ...this.data,
+              ...newData
+            ]
+          }
+        })
     }
   }
 
   private setCurrentRoomId() {
-    let req = new HttpRequest('GET', '/api/currentRoomId');
+    let req = new HttpRequest('GET', '/api/currentRoomId', {
+      responseType: 'text'
+    });
     this
       ._httpService
       .request(req)
       .subscribe({
-        next: (res) => {
+        next: (res: any) => {
           let body = res.body;
-          let content = Buffer.from(body).toString();
 
-          if (content) var parsedId = parseInt(content);
+          if (body) var parsedId = parseInt(body);
           this.currentRoomId = parsedId!;
         },
         error: () => this.eventEmitter.emit('currentRoomIdFailed')
