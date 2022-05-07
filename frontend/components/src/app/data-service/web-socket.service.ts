@@ -1,13 +1,14 @@
 import { Injectable } from '@angular/core';
 
-import { HttpService } from './http.service';
+import { HttpService } from '../http.service';
 
 import { HttpRequest } from '@angular/common/http';
 
-import { EventEmitter } from 'stream';
+import { EventEmitter } from '@angular/core';
 
 // RxJS imports
 import { webSocket } from 'rxjs/webSocket';
+import { UserPositionData } from './user-position-data.type';
 
 import { pipe, map }
 
@@ -15,9 +16,9 @@ import { pipe, map }
   providedIn: 'root'
 })
 export class WebSocketService {
-  private eventEmitter: EventEmitter;
+  private eventEmitter: EventEmitter<any>;
 
-  data: object;
+  data: UserPositionData;
 
   webSocket!: ReturnType<typeof webSocket>;
 
@@ -29,7 +30,7 @@ export class WebSocketService {
 
     this.eventEmitter = new EventEmitter();
 
-    this.data = {};
+    this.data = [];
 
     this.setCurrentRoomId();
 
@@ -41,16 +42,29 @@ export class WebSocketService {
       this.webSocket = webSocket(`wss://ws/room/${this.currentRoomId}`);
 
       this.webSocket
+<<<<<<< HEAD:frontend/components/src/app/web-socket.service.ts
         .subscribe(() => ({
           next: (() => {
             
           })
         }))
+=======
+        .subscribe({
+          next: (val: any) => {
+            let newData = JSON.parse(val);
+            this.data = [
+              ...this.data,
+              ...newData
+            ]
+          }
+        })
+>>>>>>> c10a6d2c5f06ee777908eaf42ff522b62aba9523:frontend/components/src/app/data-service/web-socket.service.ts
     }
   }
 
   private setCurrentRoomId() {
     let req = new HttpRequest('GET', '/api/currentRoomId', {
+<<<<<<< HEAD:frontend/components/src/app/web-socket.service.ts
       init: {
         responseType: 'text'
       }
@@ -62,6 +76,21 @@ export class WebSocketService {
       .subscribe((res) => {
         if (res) var parsedId = parseInt(res.body);
         this.currentRoomId = parsedId!;
+=======
+      responseType: 'text'
+    });
+    this
+      ._httpService
+      .request(req)
+      .subscribe({
+        next: (res: any) => {
+          let body = res.body;
+
+          if (body) var parsedId = parseInt(body);
+          this.currentRoomId = parsedId!;
+        },
+        error: () => this.eventEmitter.emit('currentRoomIdFailed')
+>>>>>>> c10a6d2c5f06ee777908eaf42ff522b62aba9523:frontend/components/src/app/data-service/web-socket.service.ts
       });
   }
 }
