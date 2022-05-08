@@ -1,6 +1,10 @@
 <svg>
   <defs>
-    <img />
+    <ng-container *ngFor="let user in users">
+      <feImage xlink:href="" />
+    </ng-container>
   </defs>
-  <circle x="0" r="50" />
+  <ng-container *ngFor="let user in users">
+    <circle x="{{user.positionData.x}} y="{{user.positionData.y}}" />
+  </ng-container>
 </svg>
