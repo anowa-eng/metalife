@@ -4,7 +4,7 @@ import { HttpService } from './../../http.service';
 import { UserPositionData } from './user-position-data.type';
 import { WebSocketService } from './web-socket.service';
 
-import { watch } from './watch';
+import { ValueWatcher } from './watch';
 
 @Injectable({
   providedIn: 'root'
@@ -23,8 +23,8 @@ export class DataService {
         this.roomData = initialData;
 
         // Then, listen for updates and change the data property accordingly
-        watch(this.webSocketService.data)
-          .subscribe((newData: UserPositionData) => {
+        new ValueWatcher('this.webSocketService.data')
+          .observable.subscribe((newData: UserPositionData) => {
             this.roomData = [
               ...this.roomData,
               ...newData
