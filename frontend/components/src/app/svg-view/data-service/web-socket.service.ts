@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 
-import { HttpService } from '../http.service';
+import { HttpService } from './../../http.service';
 
-import { HttpRequest, HttpResponse } from '@angular/common/http';
+import { HttpRequest } from '@angular/common/http';
 
 import { EventEmitter } from '@angular/core';
 
@@ -58,7 +58,8 @@ export class WebSocketService {
     });
     this
       ._httpService
-      .request(req)
+      .httpClient
+      .request<any>(req)
       .subscribe({
         next: (res: any) => {
           let body = res.body;

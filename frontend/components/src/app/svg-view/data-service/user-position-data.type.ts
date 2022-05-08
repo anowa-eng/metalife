@@ -5,6 +5,6 @@ type UserPosition = {
 type UserInRoom = {
     position: UserPosition,
     user: string;
-}
+};
 
-export type UserPositionData = UserInRoom[]
+export type UserPositionData = UserInRoom[];
