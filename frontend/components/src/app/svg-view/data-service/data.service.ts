@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { HttpService } from './../../http.service';
 import { UserPositionData } from './user-position-data.type';
 import { WebSocketService } from './web-socket.service';
+import { UserDataService } from './user-data.service';
 
 import { ValueWatcher } from './watch';
 
@@ -14,8 +15,14 @@ export class DataService {
 
   room?: number;
 
+  userDataService: UserDataService;
+
   // @ts-ignore
-  constructor(private httpService: HttpService, private webSocketService: WebSocketService) {
+  constructor(
+    private httpService: HttpService,
+    private webSocketService: WebSocketService,
+    userDataService: UserDataService
+  ) {
     // Get the "initial data"
     this.getInitialData()
       .subscribe((res: any) => {
@@ -31,7 +38,9 @@ export class DataService {
               ...newData
             ]
           })
-      })
+      });
+
+    this.userDataService = userDataService;
   }
 
   getInitialData() {

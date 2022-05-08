@@ -18,7 +18,7 @@ def get_initial_room_data(req):
     if room_object_list:
         room_object = room_object_list[0]
 
-        room_users = UserInRoom.objects.filter(room=room_object)
+        room_users = room_object.userinroom_set
         user_positions = list(map(
             lambda room_user: room_user.user_position,
             room_users
@@ -55,5 +55,5 @@ def get_user(req, id):
         user_data = json.dumps(dict(user))
     else:
         user_data = ''
-    
+
     return HttpResponse(user_data)
