@@ -14,6 +14,7 @@ export class DataService {
 
   room?: number;
 
+  // @ts-ignore
   constructor(private httpService: HttpService, private webSocketService: WebSocketService) {
     // Get the "initial data"
     this.getInitialData()
