@@ -1,19 +1,18 @@
 import { Component, OnInit } from '@angular/core';
 
-import { DataService } from './data-service/data.service';
-import { UserDataService } from './data-service/user-data.service';
+import { RoomDataService } from './data-services/room-data.service';
 
 @Component({
   selector: 'app-svg-view',
   templateUrl: './svg-view.component.html',
   styleUrls: ['./svg-view.component.scss']
 })
-export class SvgViewComponent implements OnInit {
+export class RoomViewComponent implements OnInit {
   users: object = {};
 
   constructor(
-    private dataService: DataService,
-    private userDataService:
+    private roomDataService: RoomDataService,
+    private userDataService: UserDataService
   ) {
     let roomData = this.dataService.roomData;
     let userData = this.dataSer
