@@ -9,7 +9,7 @@ import { ValueWatcher } from './watch';
 @Injectable({
   providedIn: 'root'
 })
-export class DataService {
+export class RoomDataService {
   roomData!: UserPositionData;
 
   room?: number;
