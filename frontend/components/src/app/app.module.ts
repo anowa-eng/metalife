@@ -3,12 +3,12 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { SvgViewComponent } from './svg-view/svg-view.component';
+import { RoomViewComponent } from './room-view/svg-view.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    SvgViewComponent
+    RoomViewComponent
   ],
   imports: [
     BrowserModule,

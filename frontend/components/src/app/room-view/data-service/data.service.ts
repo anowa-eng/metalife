@@ -1,4 +1,3 @@
-import { HttpRequest } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { HttpService } from './../../http.service';
 import { UserPositionData } from './user-position-data.type';
@@ -11,17 +10,14 @@ import { ValueWatcher } from './watch';
   providedIn: 'root'
 })
 export class DataService {
-  private roomData!: UserPositionData;
+  roomData!: UserPositionData;
 
   room?: number;
 
-  userDataService: UserDataService;
-
-  // @ts-ignore
   constructor(
     private httpService: HttpService,
+    // @ts-ignore
     private webSocketService: WebSocketService,
-    userDataService: UserDataService
   ) {
     // Get the "initial data"
     this.getInitialData()
@@ -39,8 +35,6 @@ export class DataService {
             ]
           })
       });
-
-    this.userDataService = userDataService;
   }
 
   getInitialData() {
