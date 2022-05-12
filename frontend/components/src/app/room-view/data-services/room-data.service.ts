@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { HttpService } from './../../http.service';
 import { UserPositionData } from './user-position-data.type';
 import { WebSocketService } from './web-socket.service';
-import { UserDataService } from './user-data.service';
 
 import { ValueWatcher } from './watch';
 
