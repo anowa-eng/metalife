@@ -12,6 +12,6 @@ export class UserDataService {
   fetchUser(userId: number) {
     return this.httpService.httpClient.get(`user/${userId}`, {
       responseType: 'json'
-    })
+    });
   }
 }
