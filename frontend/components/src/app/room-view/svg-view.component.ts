@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 
 import { RoomDataService } from './data-services/room-data.service';
+import { UserDataService } from './data-services/user-data.service';
+
+import { ValueWatcher } from './data-services/watch';
 
 @Component({
   selector: 'app-svg-view',
@@ -14,11 +17,32 @@ export class RoomViewComponent implements OnInit {
     private roomDataService: RoomDataService,
     private userDataService: UserDataService
   ) {
-    let roomData = this.dataService.roomData;
-    let userData = this.dataSer
   }
 
   ngOnInit(): void {
+    // @ts-ignore
+    let roomData = this.roomDataService.roomData;
+
+    new ValueWatcher('roomData')
+      .observable.subscribe(() => this.update());
+  }
+
+  update() {
+    let room = [];
+    for (const userInRoom of roomData) {
+      let userAsJson: any = {};
+
+      // Add userInRoom details
+      userAsJson.userInRoom = userInRoom;
+      // Get user data
+      this.userDataService.fetchUser(userAsJson.userInRoom.id)
+        .subscribe((userData: any) => {
+          let user = userData;
+          delete user.password;
+        })
+
+      room.push(userAsJson);
+    }
   }
 
 }
