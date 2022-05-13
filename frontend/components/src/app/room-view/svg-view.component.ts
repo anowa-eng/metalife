@@ -11,7 +11,7 @@ import { ValueWatcher } from './data-services/watch';
   styleUrls: ['./svg-view.component.scss']
 })
 export class RoomViewComponent implements OnInit {
-  users: object = {};
+  users: any[] = [];
 
   constructor(
     private roomDataService: RoomDataService,
@@ -28,6 +28,8 @@ export class RoomViewComponent implements OnInit {
   }
 
   update() {
+    let roomData = this.roomDataService.roomData;
+
     let room = [];
     for (const userInRoom of roomData) {
       let userAsJson: any = {};
@@ -43,6 +45,8 @@ export class RoomViewComponent implements OnInit {
 
       room.push(userAsJson);
     }
+
+    this.users = room;
   }
 
 }
