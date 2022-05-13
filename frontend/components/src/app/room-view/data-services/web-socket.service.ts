@@ -46,7 +46,7 @@ export class WebSocketService {
             this.data = [
               ...this.data,
               ...newData
-            ]
+            ];
           }
         })
     }

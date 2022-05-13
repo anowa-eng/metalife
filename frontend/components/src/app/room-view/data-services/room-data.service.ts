@@ -1,20 +1,23 @@
-import { HttpRequest } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { HttpService } from './../../http.service';
 import { UserPositionData } from './user-position-data.type';
 import { WebSocketService } from './web-socket.service';
 
-import { watch } from './watch';
+import { ValueWatcher } from './watch';
 
 @Injectable({
   providedIn: 'root'
 })
-export class DataService {
-  private roomData!: UserPositionData;
+export class RoomDataService {
+  roomData!: UserPositionData;
 
   room?: number;
 
-  constructor(private httpService: HttpService, private webSocketService: WebSocketService) {
+  constructor(
+    private httpService: HttpService,
+    // @ts-ignore
+    private webSocketService: WebSocketService,
+  ) {
     // Get the "initial data"
     this.getInitialData()
       .subscribe((res: any) => {
@@ -23,14 +26,14 @@ export class DataService {
         this.roomData = initialData;
 
         // Then, listen for updates and change the data property accordingly
-        watch(this.webSocketService.data)
-          .subscribe((newData: UserPositionData) => {
+        new ValueWatcher('this.webSocketService.data')
+          .observable.subscribe((newData: UserPositionData) => {
             this.roomData = [
               ...this.roomData,
               ...newData
             ]
           })
-      })
+      });
   }
 
   getInitialData() {
