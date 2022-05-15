@@ -25,6 +25,12 @@ export class RoomViewComponent implements OnInit {
 
     new ValueWatcher('roomData')
       .observable.subscribe(() => this.update());
+
+    this.test();
+  }
+
+  test() {
+    console.log(this.roomDataService.roomData)
   }
 
   update() {

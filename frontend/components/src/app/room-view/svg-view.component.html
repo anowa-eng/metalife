@@ -1,17 +1,15 @@
 <svg>
   <defs>
     <ng-container *ngFor="let user in users">
-      <feImage xlink:href="{{user.user.profile_set}}" id="user-{{user.id}}" />
+      <feImage [attr.xlink:href]="user.user.profile_set" id="user-{{user.id}}" />
     </ng-container>
   </defs>
-  <ng-container *ngFor="let user in users">
-    <circle
-      x="{{user.positionData.x}}"
-      y="{{user.positionData.y}}"
+  <circle *ngFor="let user in users"
+    [attr.x]="user.userInRoom.user_position.x"
+    [attr.y]="user.userInRoom.user_position.y"
 
-      r="7.5"
+    attr.r="7.5"
 
-      fill="url(#user-{{user-id}})"
-    />
-  </ng-container>
+    attr.fill="url(#user-{{user.id}})"
+  />
 </svg>
