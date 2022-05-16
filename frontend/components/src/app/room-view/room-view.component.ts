@@ -6,9 +6,9 @@ import { UserDataService } from './data-services/user-data.service';
 import { ValueWatcher } from './data-services/watch';
 
 @Component({
-  selector: 'app-svg-view',
-  templateUrl: './svg-view.component.html',
-  styleUrls: ['./svg-view.component.scss']
+  selector: 'app-room-view',
+  templateUrl: './room-view.component.html',
+  styleUrls: ['./room-view.component.scss']
 })
 export class RoomViewComponent implements OnInit {
   users: any[] = [];

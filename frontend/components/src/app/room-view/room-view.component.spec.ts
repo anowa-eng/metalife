@@ -1,8 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { RoomViewComponent } from './svg-view.component';
+import { RoomViewComponent } from './room-view.component';
 
-describe('SvgViewComponent', () => {
+describe('RoomViewComponent', () => {
   let component: RoomViewComponent;
   let fixture: ComponentFixture<RoomViewComponent>;
 
