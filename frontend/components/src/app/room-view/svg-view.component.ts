@@ -21,8 +21,8 @@ export class RoomViewComponent implements OnInit {
 
   ngOnInit(): void {
     // @ts-ignore
-    new ValueWatcher('this.roomDataService.roomData', this)
-      .observable.subscribe(() => this.update());
+    let watcher = new ValueWatcher(() => this.roomDataService.roomData)
+    watcher.onChangeDetected(this.update);
 
     this.test();
   }

@@ -26,8 +26,8 @@ export class RoomDataService {
         this.roomData = initialData;
 
         // Then, listen for updates and change the data property accordingly
-        new ValueWatcher('this.webSocketService.data')
-          .observable.subscribe((newData: UserPositionData) => {
+        let watcher = new ValueWatcher(() => this.webSocketService.data)
+        watcher.onChangeDetected((newData: any) => {
             this.roomData = [
               ...this.roomData,
               ...newData

@@ -1,24 +1,28 @@
 import { Subject } from "rxjs";
-import { interval as rxjsInterval } from 'rxjs';
+import { interval } from 'rxjs';
 
 export class ValueWatcher {
   private value?: any;
-  private variableString: string;
+  private variableFunction: () => any;
 
-  private prev: any;
-  private current: any;
+  private prev: any = null;
+  private current?: any = null;
 
-  subject = new Subject<any>();
-  observable = this.subject.asObservable();
+  private subject = new Subject<any>();
+  private observable = this.subject.asObservable();
 
-  constructor(variableString: any) {
-    this.variableString = variableString;
-    rxjsInterval()
+  constructor(variableFunction: () => any) {
+    this.variableFunction = variableFunction;
+    interval()
       .subscribe(() => {
-        this.value = eval(this.variableString);
-
-        this.current = this.value;
+        this.current = this.variableFunction();
         if (this.prev !== this.current) this.subject.next(this.value);
+
+        this.prev = this.current;
       })
+  }
+
+  onChangeDetected(handler: (...args: Parameters<typeof this.observable.subscribe>) => void) {
+    this.observable.subscribe(handler);
   }
 }
