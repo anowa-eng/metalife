@@ -37,7 +37,7 @@ export class RoomDataService {
   }
 
   getInitialData() {
-    return this.httpService.httpClient.get('api/get-current-room', {
+    return this.httpService.httpClient.get('api/get-initial-room-data', {
       responseType: 'text'
     });
   }
