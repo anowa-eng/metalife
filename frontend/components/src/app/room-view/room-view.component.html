@@ -1,7 +1,7 @@
 <svg>
   <defs>
     <ng-container *ngFor="let user in users">
-      <feImage [attr.xlink:href]="user.user.profile_set" id="user-{{user.id}}" />
+      <feImage attr.width="7.5" attr.height="7.5" [attr.xlink:href]="user.user.profile_set" id="user-{{user.id}}" />
     </ng-container>
   </defs>
   <circle *ngFor="let user in users"
