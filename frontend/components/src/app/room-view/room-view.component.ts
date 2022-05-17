@@ -31,7 +31,7 @@ export class RoomViewComponent implements OnInit {
     console.log(this.roomDataService.roomData)
   }
 
-  update() {
+  update = () => {
     let roomData = this.roomDataService.roomData;
 
     let room = [];
@@ -52,5 +52,4 @@ export class RoomViewComponent implements OnInit {
 
     this.users = room;
   }
-
 }
