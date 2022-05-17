@@ -11,7 +11,7 @@ backend() {
 
     cd project || exit
 
-    if [[ $0 == 'runserver' ]]; then
+    if [[ $1 == 'runserver' ]]; then
         python3 manage.py runserver
     fi
 }
