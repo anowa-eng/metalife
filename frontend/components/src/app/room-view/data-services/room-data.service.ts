@@ -28,11 +28,11 @@ export class RoomDataService {
         // Then, listen for updates and change the data property accordingly
         let watcher = new ValueWatcher(() => this.webSocketService.data)
         watcher.onChangeDetected((newData: any) => {
-            this.roomData = [
-              ...this.roomData,
-              ...newData
-            ]
-          })
+          this.roomData = [
+            ...this.roomData,
+            ...newData
+          ]
+        })
       });
   }
 
