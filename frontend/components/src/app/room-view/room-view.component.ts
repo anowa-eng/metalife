@@ -33,6 +33,8 @@ export class RoomViewComponent implements OnInit {
 
   update = () => {
     let roomData = this.roomDataService.roomData;
+    // Delete in prod
+    console.log(roomData);
 
     let room = [];
     for (const userInRoom of roomData) {

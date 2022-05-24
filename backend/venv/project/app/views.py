@@ -50,11 +50,10 @@ def get_initial_room_data(req):
 
     return HttpResponse(json.dumps(initial_data))
 def get_user(req, id):
-    user_list = User.objects.filter(pk=id)
-    if user_list:
-        user = user_list[0]
+    if User.objects.filter(pk=id):
+        user = User.objects.get(pk=id)
 
-        user_data = json.dumps(dict(user))
+        user_data = json.dumps(user)
     else:
         user_data = ''
 
