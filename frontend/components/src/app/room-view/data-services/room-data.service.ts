@@ -21,9 +21,8 @@ export class RoomDataService {
     // Get the "initial data"
     this.getInitialData()
       .subscribe((res: any) => {
-        // Update the data
-        console.log(res.body);
-        
+        console.log(res);
+
         let initialData = JSON.parse(res.body);
         this.roomData = initialData;
 
