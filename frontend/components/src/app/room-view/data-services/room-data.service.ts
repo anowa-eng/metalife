@@ -21,23 +21,24 @@ export class RoomDataService {
     // Get the "initial data"
     this.getInitialData()
       .subscribe((res: any) => {
-        // Update the data
+        console.log(res);
+
         let initialData = JSON.parse(res.body);
         this.roomData = initialData;
 
         // Then, listen for updates and change the data property accordingly
-        new ValueWatcher('this.webSocketService.data')
-          .observable.subscribe((newData: UserPositionData) => {
-            this.roomData = [
-              ...this.roomData,
-              ...newData
-            ]
-          })
+        let watcher = new ValueWatcher(() => this.webSocketService.data)
+        watcher.onChangeDetected((newData: any) => {
+          this.roomData = [
+            ...this.roomData,
+            ...newData
+          ]
+        })
       });
   }
 
   getInitialData() {
-    return this.httpService.httpClient.get('api/get-current-room', {
+    return this.httpService.httpClient.get('api/get-initial-room-data', {
       responseType: 'text'
     });
   }

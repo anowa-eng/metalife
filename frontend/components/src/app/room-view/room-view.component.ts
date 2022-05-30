@@ -6,9 +6,9 @@ import { UserDataService } from './data-services/user-data.service';
 import { ValueWatcher } from './data-services/watch';
 
 @Component({
-  selector: 'app-svg-view',
-  templateUrl: './svg-view.component.html',
-  styleUrls: ['./svg-view.component.scss']
+  selector: 'app-room-view',
+  templateUrl: './room-view.component.html',
+  styleUrls: ['./room-view.component.scss']
 })
 export class RoomViewComponent implements OnInit {
   users: any[] = [];
@@ -21,10 +21,8 @@ export class RoomViewComponent implements OnInit {
 
   ngOnInit(): void {
     // @ts-ignore
-    let roomData = this.roomDataService.roomData;
-
-    new ValueWatcher('roomData')
-      .observable.subscribe(() => this.update());
+    let watcher = new ValueWatcher(() => this.roomDataService.roomData)
+    watcher.onChangeDetected(this.update);
 
     this.test();
   }
@@ -33,8 +31,10 @@ export class RoomViewComponent implements OnInit {
     console.log(this.roomDataService.roomData)
   }
 
-  update() {
+  update = () => {
     let roomData = this.roomDataService.roomData;
+    // Delete in prod
+    console.log(roomData);
 
     let room = [];
     for (const userInRoom of roomData) {
@@ -54,5 +54,4 @@ export class RoomViewComponent implements OnInit {
 
     this.users = room;
   }
-
 }

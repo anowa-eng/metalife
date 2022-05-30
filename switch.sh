@@ -11,7 +11,7 @@ backend() {
 
     cd project || exit
 
-    if [[ $0 == 'runserver' ]]; then
+    if [[ $1 == 'runserver' ]]; then
         python3 manage.py runserver
     fi
 }
@@ -19,7 +19,7 @@ backend() {
 frontend() {
   cd $FRONTEND/components/src/app/ || exit
 
-  if [[ $0 == 'build' ]]; then
-      ng build --base-href . --output-path $BACKEND/app/static/ang/ --output-hashing none --watch
+  if [[ $1 == 'build' ]]; then
+      ng build --base-href . --output-path $BACKEND/venv/project/app/static/ang/ --output-hashing none --watch
   fi
 }

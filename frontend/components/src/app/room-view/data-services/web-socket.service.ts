@@ -53,7 +53,7 @@ export class WebSocketService {
   }
 
   private setCurrentRoomId() {
-    let req = new HttpRequest('GET', '/api/currentRoomId', {
+    let req = new HttpRequest('GET', '/api/current-room', {
       responseType: 'text'
     });
     this
