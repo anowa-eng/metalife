@@ -16,6 +16,8 @@ class UserProfile(models.Model):
 class Room(models.Model):
     name = models.CharField(max_length=255)
 
+    private = models.BooleanField()
+
     def __str__(self):
         return self.name
 class InvitedUser(models.Model):
