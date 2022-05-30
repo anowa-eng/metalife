@@ -1,8 +1,6 @@
-import json
-
 from django.shortcuts import render
 
-from django.http import HttpResponse
+from django.http import JsonResponse
 
 from .models import *
 
@@ -53,7 +51,7 @@ def get_user(req, id):
     if User.objects.filter(pk=id):
         user = User.objects.get(pk=id)
 
-        user_data = json.dumps(user)
+        user_data = serializers.serialize('json', user)
     else:
         user_data = ''
 
