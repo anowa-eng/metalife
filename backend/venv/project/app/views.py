@@ -3,6 +3,7 @@ from django.shortcuts import render
 from django.http import JsonResponse
 
 from .models import *
+from .serializers import *
 
 # Create your views here.
 def index_view(req):
@@ -51,7 +52,8 @@ def get_user(req, id):
     if User.objects.filter(pk=id):
         user = User.objects.get(pk=id)
 
-        user_data = serializers.serialize('json', user)
+        serializer = UserSerializer(user)
+        user_data = serializer.data
     else:
         user_data = ''
 
