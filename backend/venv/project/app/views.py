@@ -1,6 +1,6 @@
 from django.shortcuts import render
 
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 
 from .models import *
 from .serializers import *
@@ -47,7 +47,7 @@ def get_initial_room_data(req):
     else:
         initial_data = []
 
-    return HttpResponse(json.dumps(initial_data))
+    return JsonResponse({'data': initial_data})
 def get_user(req, id):
     if User.objects.filter(pk=id):
         user = User.objects.get(pk=id)
@@ -57,4 +57,4 @@ def get_user(req, id):
     else:
         user_data = ''
 
-    return HttpResponse(user_data)
+    return JsonResponse(user_data)
