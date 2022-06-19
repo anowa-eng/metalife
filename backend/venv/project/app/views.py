@@ -5,13 +5,15 @@ from django.http import JsonResponse, HttpResponse
 from .models import *
 from .serializers import *
 
+import json
+
 # Create your views here.
 def index_view(req):
     return render(req, 'index.html')
 
 def current_room(req):
     current_room = req.session.get('current_room')
-    return HttpResponse(current_room if current_room else '')
+    return JsonResponse(current_room if current_room else '')
 def get_initial_room_data(req):
     current_room = req.session.get('current_room')
 
@@ -47,7 +49,11 @@ def get_initial_room_data(req):
     else:
         initial_data = []
 
+<<<<<<< HEAD
     return JsonResponse({'data': initial_data})
+=======
+    return JsonResponse(json.dumps(initial_data))
+>>>>>>> 34ffa3709a21a3d1c3e937b74f2e8abafbcc61ab
 def get_user(req, id):
     if User.objects.filter(pk=id):
         user = User.objects.get(pk=id)
