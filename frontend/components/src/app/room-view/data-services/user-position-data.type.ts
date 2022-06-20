@@ -7,4 +7,6 @@ type UserInRoom = {
     user: string;
 };
 
-export type UserPositionData = UserInRoom[];
+export type UserPositionData = {
+  'data': UserInRoom[];
+}
