@@ -23,6 +23,7 @@ from django.conf import settings
 
 urlpatterns = [
     path('', index_view),
+
     path('api/current-room', current_room),
     path('api/get-initial-room-data', get_initial_room_data),
     path('api/user/<int:id>', get_user),
