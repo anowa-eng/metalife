@@ -14,7 +14,7 @@ class UserPositionSerializer(serializers.ModelSerializer):
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
-        fields = ('profile_picture',)
+        fields = ('avatar',)
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
