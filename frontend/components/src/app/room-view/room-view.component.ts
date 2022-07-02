@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 
-import { RoomDataService } from './data-services/room-data.service';
-import { UserDataService } from './data-services/user-data.service';
+import { RoomDataService } from './room-data.service';
+import { UserDataService } from './../user-data.service';
 
-import { ValueWatcher } from './data-services/watch';
+import { transformData } from './transform-data';
 
 @Component({
   selector: 'app-room-view',
@@ -11,7 +11,8 @@ import { ValueWatcher } from './data-services/watch';
   styleUrls: ['./room-view.component.scss']
 })
 export class RoomViewComponent implements OnInit {
-  users: any[] = [];
+  data!: any[];
+  userProfiles!: any[];
 
   constructor(
     private roomDataService: RoomDataService,
@@ -20,38 +21,28 @@ export class RoomViewComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // @ts-ignore
-    let watcher = new ValueWatcher(() => this.roomDataService.roomData)
-    watcher.onChangeDetected(this.update);
+    this.roomDataService.getInitialData()
+      .subscribe((res) => {
+        let data = res.data;
+        let transformedData = transformData(data, 1);
 
-    this.test();
+        this.data = transformedData;
+
+        this.loadProfiles();
+      });
   }
 
-  test() {
-    console.log(this.roomDataService.roomData)
+  loadProfiles() {
+    let ids = this.data?.map((user) => user.user_id);
+    this.userDataService.loadUserProfiles(ids)
+      .subscribe((profiles) => {
+        this.userProfiles = profiles;
+      })
   }
 
-  update = () => {
-    let roomData = this.roomDataService.roomData;
-    // Delete in prod
-    console.log(roomData);
-
-    let room = [];
-    for (const userInRoom of roomData) {
-      let userAsJson: any = {};
-
-      // Add userInRoom details
-      userAsJson.userInRoom = userInRoom;
-      // Get user data
-      this.userDataService.fetchUser(userAsJson.userInRoom.id)
-        .subscribe((userData: any) => {
-          let user = userData;
-          delete user.password;
-        })
-
-      room.push(userAsJson);
-    }
-
-    this.users = room;
+  getProfileById(userInRoom: any) {
+    let userId = userInRoom.user_id;
+    return this.userProfiles?.find((user) => user.userId === userId);
   }
+
 }

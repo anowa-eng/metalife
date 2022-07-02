@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { CommonModule } from '@angular/common';
 
 import { HttpClientModule } from '@angular/common/http'
 
@@ -10,7 +11,7 @@ import { RoomViewComponent } from './room-view/room-view.component';
 @NgModule({
   declarations: [
     AppComponent,
-    RoomViewComponent
+    RoomViewComponent,
   ],
   imports: [
     BrowserModule,

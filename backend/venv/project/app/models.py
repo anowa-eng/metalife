@@ -9,7 +9,7 @@ class User(models.Model):
     def __str__(self):
         return self.username
 class UserProfile(models.Model):
-    profile_picture = models.ImageField(upload_to='media/', null=True, blank=True)
+    avatar = models.ImageField(null=True, blank=True)
 
     user = models.ForeignKey(User, on_delete=User)
 

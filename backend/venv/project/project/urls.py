@@ -15,15 +15,19 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from django.conf.urls.static import static
 
 from app.views import *
 
+from django.conf import settings
+
 urlpatterns = [
     path('', index_view),
+
     path('api/current-room', current_room),
     path('api/get-initial-room-data', get_initial_room_data),
     path('api/user/<int:id>', get_user),
 
     # Temporary
     path('admin/', admin.site.urls)
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
