@@ -45,10 +45,8 @@ export class UserDataService {
 
       let observables = ids.map((id) => this.loadUserProfile(id));
       let promises = observables.map((observable) => firstValueFrom(observable));
-      for (const promise of promises)
-        promise.then((value) => profiles.push(value))
-      console.log(profiles);
-      sub.next(profiles);
+      Promise.all(promises)
+        .then((profiles) => sub.next(profiles));
     });
   }
 }

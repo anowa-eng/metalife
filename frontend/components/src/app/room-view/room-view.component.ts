@@ -3,6 +3,8 @@ import { Component, OnInit } from '@angular/core';
 import { RoomDataService } from './room-data.service';
 import { UserDataService } from './../user-data.service';
 
+import { transformData } from './transform-data';
+
 @Component({
   selector: 'app-room-view',
   templateUrl: './room-view.component.html',
@@ -21,7 +23,10 @@ export class RoomViewComponent implements OnInit {
   ngOnInit(): void {
     this.roomDataService.getInitialData()
       .subscribe((res) => {
-        this.data = res.data;
+        let data = res.data;
+        let transformedData = transformData(data, 1);
+
+        this.data = transformedData;
 
         this.loadProfiles();
       });
@@ -35,9 +40,9 @@ export class RoomViewComponent implements OnInit {
       })
   }
 
-  getProfileIdOf(userInRoom: any) {
+  getProfileById(userInRoom: any) {
     let userId = userInRoom.user_id;
-    return this.userProfiles?.find((profile) => profile.userId === userId);
+    return this.userProfiles?.find((user) => user.userId === userId);
   }
 
 }

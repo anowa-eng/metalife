@@ -21,6 +21,6 @@
     [attr.r]="12.5"
     [attr.cx]="userInRoom.position.x"
     [attr.cy]="userInRoom.position.y"
-    attr.fill="url(#user-{{getProfileIdOf(userInRoom)?.userId}})"
+    attr.fill="url(#user-{{getProfileById(userInRoom)?.userId}})"
     *ngFor="let userInRoom of data" />
 </svg>
