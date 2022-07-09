@@ -1,0 +1,9 @@
+<label for="direction">Direction: </label>
+<input
+    type="range"
+    min="-180"
+    max="180"
+    [(ngModel)]="localUser.direction"
+    (ngModelChange)="onNgModelChange()"
+    id="direction"> 
+<output>({{localUser?.direction}})</output>

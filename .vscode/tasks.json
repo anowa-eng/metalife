@@ -27,6 +27,14 @@
 				],
 				"file": "frontend/project/manage.py"
 			}
+		},
+		{
+			"type": "npm",
+			"script": "start",
+			"path": "frontend/components",
+			"problemMatcher": [],
+			"label": "npm: start - frontend/components",
+			"detail": "ng serve"
 		}
 	]
 }

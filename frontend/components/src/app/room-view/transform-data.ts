@@ -28,7 +28,6 @@ export function transformData(userData: any, userId: number) {
                 user_id: userId
             };
         });
-    
-    console.log(transformation1);
+
     return transformation1;
 }

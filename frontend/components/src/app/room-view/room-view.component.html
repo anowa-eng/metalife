@@ -17,10 +17,12 @@
       </pattern>
     </ng-container>
   </defs>
-  <circle
-    [attr.r]="12.5"
-    [attr.cx]="userInRoom.position.x"
-    [attr.cy]="userInRoom.position.y"
-    attr.fill="url(#user-{{getProfileById(userInRoom)?.userId}})"
-    *ngFor="let userInRoom of data" />
+  <g attr.transform="rotate({{localUser?.direction || 0}} {{getCenterLocation().x}} {{getCenterLocation().y}})">
+    <circle
+      [attr.r]="12.5"
+      [attr.cx]="userInRoom.position.x"
+      [attr.cy]="userInRoom.position.y"
+      attr.fill="url(#user-{{getProfileById(userInRoom)?.userId}})"
+      *ngFor="let userInRoom of data" />
+  </g>
 </svg>
