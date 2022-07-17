@@ -2,19 +2,23 @@ export function transformData(userData: any, userId: number) {
     // Transform based on distance to user of ID userId
 
     let user = userData.find((userInRoom: any) => userInRoom.user_id === userId);
+
     let distances: any = {};
-    for (const data of userData)
+    for (const data of userData) {
+        let positionData = data.data;
         distances[data.user_id] = {
-            x: data.position.x - user.position.x,
-            y: data.position.y - user.position.y
+            x: positionData.position.x - user.data.position.x,
+            y: positionData.position.y - user.data.position.y
         };
-    let transformation1 = Object
+    }
+
+    let transformation = Object
         .entries(distances)
         .map((entries: any) => {
             let userId = parseInt(entries[0]),
-                distanceData = entries[1];
+                distanceData = entries[1]
             
-            let center: any = {
+            let center = {
                 x: window.innerWidth / 2,
                 y: window.innerHeight / 2
             };
@@ -27,7 +31,18 @@ export function transformData(userData: any, userId: number) {
                 position: position,
                 user_id: userId
             };
-        });
+        })
+        // Add the direction data to the transformed data as well
+        .map((data: any) => {
+            let direction = userData.find((user: any) => user.user_id === data.user_id)
+                .data
+                .direction;
+            return {
+                ...data,
+                direction: direction
+            }
+        })
 
-    return transformation1;
+
+    return transformation;
 }
