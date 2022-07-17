@@ -6,10 +6,10 @@ class RoomSerializer(serializers.ModelSerializer):
     class Meta:
         model = Room
         fields = ('name', 'private')
-class UserPositionSerializer(serializers.ModelSerializer):
+class UserInRoomDataSerializer(serializers.ModelSerializer):
     class Meta:
-        model = UserPosition
-        fields = ('x', 'y')
+        model = UserInRoomData
+        fields = ('x', 'y', 'direction')
 
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
@@ -27,4 +27,4 @@ class InvitedUserSerializer(serializers.ModelSerializer):
 class UserInRoomSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserInRoom
-        fields = ('user', 'room', 'user_position')
+        fields = ('user', 'room', 'data')

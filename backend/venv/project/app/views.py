@@ -24,7 +24,7 @@ def get_initial_room_data(req):
 
         room_users = UserInRoom.objects.filter(room=room_object)
         user_positions = list(map(
-            lambda room_user: room_user.user_position,
+            lambda room_user: room_user.data,
             room_users
         ))
 
@@ -42,11 +42,17 @@ def get_initial_room_data(req):
             ))[0]
             user_id = room_user.user.id
 
-            user_position_serializer = UserPositionSerializer(user_position)
-            user_position_dict = user_position_serializer.data
+            user_in_room_data_serializer = UserInRoomDataSerializer(user_position)
+            user_in_room_dict = user_in_room_data_serializer.data
 
             user_data = {
-                'position': user_position_dict,
+                'data': {
+                    'position': {
+                        'x': user_in_room_dict['x'],
+                        'y': user_in_room_dict['y']
+                    },
+                    'direction': user_in_room_dict['direction']
+                },
                 'user_id': user_id
             }
             initial_data.append(user_data)

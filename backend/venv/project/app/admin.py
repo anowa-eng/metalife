@@ -7,6 +7,6 @@ admin.site.register([
     UserProfile,
     Room,
     InvitedUser,
-    UserPosition,
+    UserInRoomData,
     UserInRoom
 ])

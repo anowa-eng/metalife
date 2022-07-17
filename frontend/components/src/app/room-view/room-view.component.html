@@ -23,6 +23,8 @@
       [attr.cx]="userInRoom.position.x"
       [attr.cy]="userInRoom.position.y"
       attr.fill="url(#user-{{getProfileById(userInRoom)?.userId}})"
+      attr.transform="rotate({{userInRoom.direction}} {{userInRoom.position.x}} {{userInRoom.position.y}})"
+      class="user"
       *ngFor="let userInRoom of data" />
   </g>
 </svg>

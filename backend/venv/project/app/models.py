@@ -11,7 +11,7 @@ class User(models.Model):
 class UserProfile(models.Model):
     avatar = models.ImageField(null=True, blank=True)
 
-    user = models.ForeignKey(User, on_delete=User)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
 
 class Room(models.Model):
     name = models.CharField(max_length=255)
@@ -26,14 +26,18 @@ class InvitedUser(models.Model):
 
     def __str__(self):
         return self.user.username
-class UserPosition(models.Model):
+class UserInRoomData(models.Model):
     x = models.PositiveBigIntegerField()
     y = models.PositiveBigIntegerField()
+
+    direction = models.PositiveSmallIntegerField()
+    class Meta:
+        verbose_name_plural = 'user in room data'
 class UserInRoom(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     room = models.ForeignKey(Room, on_delete=models.CASCADE)
 
-    user_position = models.ForeignKey(UserPosition, on_delete=models.CASCADE)
+    data = models.ForeignKey(UserInRoomData, on_delete=models.CASCADE)
 
     def __str__(self):
         return f'{self.user} in {self.room.name}'
