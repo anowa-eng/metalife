@@ -17,7 +17,7 @@
       </pattern>
     </ng-container>
   </defs>
-  <g attr.transform="rotate({{localUser?.direction || 0}} {{getCenterLocation().x}} {{getCenterLocation().y}})">
+  <g attr.transform="rotate({{-(localUser?.direction || 0)}} {{getCenterLocation().x}} {{getCenterLocation().y}})">
     <circle
       [attr.r]="12.5"
       [attr.cx]="userInRoom.position.x"
