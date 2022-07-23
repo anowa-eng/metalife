@@ -1,4 +1,4 @@
-from channels.genetic.websocket import JsonWebsocketConsumer
+from channels.generic.websocket import JsonWebsocketConsumer
 
 class MotionConsumer(JsonWebsocketConsumer):
     def connect(self):
