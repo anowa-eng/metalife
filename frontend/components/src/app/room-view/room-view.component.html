@@ -1,3 +1,8 @@
+<p>
+  <var>v</var>: {{localUser.velocity}}
+  <var>&omega;</var>: {{localUser.angularVelocity}}
+</p>
+
 <svg xmlns="http://www.w3.org/2000/svg">
   <defs>
     <ng-container *ngIf="userProfiles">
@@ -17,7 +22,7 @@
       </pattern>
     </ng-container>
   </defs>
-  <g attr.transform="rotate({{-(localUser?.direction || 0)}} {{getCenterLocation().x}} {{getCenterLocation().y}})">
+  <g attr.transform="rotate({{-(localUser.direction || 0)}} {{getCenterLocation().x}} {{getCenterLocation().y}})">
     <circle
       [attr.r]="12.5"
       [attr.cx]="userInRoom.position.x"

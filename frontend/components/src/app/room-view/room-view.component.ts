@@ -23,13 +23,11 @@ export class RoomViewComponent implements OnInit {
       y: 0
     },
     direction: 0,
-    velocity: {
-      \u03c9: 0,
-      v: 0,
-    },
+    velocity: 0,
+    angularVelocity: 0,
     t: 35,
-    drag: 0.05,
-    angularDrag: 5,
+    drag: 1,
+    angularDrag: 1,
     id: 1
   };
 
@@ -95,23 +93,23 @@ export class RoomViewComponent implements OnInit {
     let newVelocity, newAngularVelocity;
     switch (event.code) {
       case 'ArrowUp':
-        newVelocity = this.localUser.velocity.v + 1
+        newVelocity = this.localUser.velocity + 3
         if (newVelocity < this.localUser.t)
-          this.localUser.velocity.v = newVelocity;
+          this.localUser.velocity = newVelocity;
         else
-          this.localUser.velocity.v = this.localUser.t;
+          this.localUser.velocity = this.localUser.t;
         break;
       case 'ArrowLeft':
-        newAngularVelocity = this.localUser.velocity.ω - 1;
+        newAngularVelocity = this.localUser.angularVelocity + 1.5;
         if (Math.abs(newAngularVelocity) < this.localUser.t)
-          this.localUser.velocity.ω = newAngularVelocity;
+          this.localUser.angularVelocity = newAngularVelocity;
         else
-          this.localUser.velocity.ω = this.localUser.t;
+          this.localUser.angularVelocity = this.localUser.t;
         break;
       case 'ArrowRight':
-        newAngularVelocity = this.localUser.velocity.ω - 0.5;
-        if (Math.abs(this.localUser.velocity.ω) < this.localUser.t)
-          this.localUser.velocity.ω -= 2;
+        newAngularVelocity = this.localUser.angularVelocity - 1.5;
+        if (Math.abs(this.localUser.angularVelocity) < this.localUser.t)
+          this.localUser.angularVelocity -= 2;
         break;
     }
 
@@ -119,10 +117,10 @@ export class RoomViewComponent implements OnInit {
   }
 
   updateLocalUser(this: RoomViewComponent) {
-    this.localUser.position.y += Math.sin((this.localUser.direction - 90) * (Math.PI / 180)) * this.localUser.velocity.v;
-    this.localUser.position.x += Math.cos((this.localUser.direction - 90) * (Math.PI / 180)) * this.localUser.velocity.v;
+    this.localUser.position.y += Math.sin((this.localUser.direction - 90) * (Math.PI / 180)) * this.localUser.velocity;
+    this.localUser.position.x += Math.cos((this.localUser.direction - 90) * (Math.PI / 180)) * this.localUser.velocity;
 
-    this.localUser.direction += -this.localUser.velocity.ω;
+    this.localUser.direction += -this.localUser.angularVelocity;
   }
 
   updateData(this: RoomViewComponent) {
@@ -138,27 +136,27 @@ export class RoomViewComponent implements OnInit {
   }
 
   addDrag(this: RoomViewComponent) {
-    let change = Math.sign(this.localUser.velocity.v) == -1
+    let change = Math.sign(this.localUser.velocity) == -1
       ? this.localUser.drag
       : -this.localUser.drag;
-    let angularChange = Math.sign(this.localUser.velocity.ω) == -1
+    let angularChange = Math.sign(this.localUser.angularVelocity) == -1
       ? this.localUser.angularDrag
       : -this.localUser.angularDrag;
 
     const differentSigns = (newVelocity: number) => Math.sign(newVelocity - change) != Math.sign(newVelocity);
 
-    let newVelocity = this.localUser.velocity.v + change;
-    let newAngularVelocity = this.localUser.velocity.ω + angularChange;
+    let newVelocity = this.localUser.velocity + change;
+    let newAngularVelocity = this.localUser.angularVelocity + angularChange;
 
-    if (this.localUser.velocity.v != 0 && !differentSigns(newVelocity))
-      this.localUser.velocity.v = newVelocity
+    if (this.localUser.velocity != 0 && !differentSigns(newVelocity))
+      this.localUser.velocity = newVelocity
     else if (differentSigns(newVelocity))
-      this.localUser.velocity.v = 0
+      this.localUser.velocity = 0
     
-    if (this.localUser.velocity.ω != 0 && !differentSigns(newAngularVelocity))
-      this.localUser.velocity.ω = newAngularVelocity
+    if (this.localUser.angularVelocity != 0 && !differentSigns(newAngularVelocity))
+      this.localUser.angularVelocity = newAngularVelocity
     else if (differentSigns(newVelocity))
-      this.localUser.velocity.ω = 0;
+      this.localUser.angularVelocity = 0;
   }
 
 }
