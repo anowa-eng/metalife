@@ -100,16 +100,16 @@ export class RoomViewComponent implements OnInit {
           this.localUser.velocity = this.localUser.t;
         break;
       case 'ArrowLeft':
-        newAngularVelocity = this.localUser.angularVelocity + 1.5;
+        newAngularVelocity = this.localUser.angularVelocity - 1.5;
         if (Math.abs(newAngularVelocity) < this.localUser.t)
           this.localUser.angularVelocity = newAngularVelocity;
         else
           this.localUser.angularVelocity = this.localUser.t;
         break;
       case 'ArrowRight':
-        newAngularVelocity = this.localUser.angularVelocity - 1.5;
+        newAngularVelocity = this.localUser.angularVelocity + 1.5;
         if (Math.abs(this.localUser.angularVelocity) < this.localUser.t)
-          this.localUser.angularVelocity -= 2;
+          this.localUser.angularVelocity = newAngularVelocity
         break;
     }
 
@@ -120,7 +120,7 @@ export class RoomViewComponent implements OnInit {
     this.localUser.position.y += Math.sin((this.localUser.direction - 90) * (Math.PI / 180)) * this.localUser.velocity;
     this.localUser.position.x += Math.cos((this.localUser.direction - 90) * (Math.PI / 180)) * this.localUser.velocity;
 
-    this.localUser.direction += -this.localUser.angularVelocity;
+    this.localUser.direction += this.localUser.angularVelocity;
   }
 
   updateData(this: RoomViewComponent) {
