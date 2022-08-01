@@ -9,16 +9,16 @@
     <title>Sympan {% if title %} | {{title}}{% endif %}</title>
 
     {% load static %}
-    <link rel="image/x-icon" href="{% static 'ang/favicon.ico' %}" />
+    <link rel="icon" href="{% static 'ang/favicon.ico' %}" type="image/x-icon" />
 
     <link rel="stylesheet" href="{% static 'ang/styles.css' %}" />
 </head>
 <body>
     <app-root></app-root>
 
+    <script src="{% static 'ang/runtime.js' %}"></script>
+    <script src="{% static 'ang/polyfills.js' %}"></script>
     <script src="{% static 'ang/vendor.js' %}"></script>
     <script src="{% static 'ang/main.js' %}"></script>
-    <script src="{% static 'ang/polyfills.js' %}"></script>
-    <script src="{% static 'ang/runtime.js' %}"></script>
 </body>
 </html>

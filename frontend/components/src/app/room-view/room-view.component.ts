@@ -25,9 +25,9 @@ export class RoomViewComponent implements OnInit {
     direction: 0,
     velocity: 0,
     angularVelocity: 0,
-    t: 2.5,
-    drag: 0.3,
-    angularDrag: 1,
+    // t: 1.5,
+    drag: 0,
+    angularDrag: 0,
     id: 1
   };
 
@@ -68,11 +68,10 @@ export class RoomViewComponent implements OnInit {
 
         this.loadProfiles();
       });
-    
+
     setInterval(() => {
       this.updateDrags();
       this.addDrags();
-
       this.updateLocalUser();
       this.updateData();
     });
@@ -92,27 +91,28 @@ export class RoomViewComponent implements OnInit {
   }
 
   @HostListener('window:keydown', ['$event'])
-  updateVelocities(event: KeyboardEvent) {
+  updateVelocities(this: RoomViewComponent, event: KeyboardEvent) {
     let newVelocity, newAngularVelocity;
     switch (event.code) {
       case 'ArrowUp':
         newVelocity = this.localUser.velocity + 0.25
-        if (newVelocity < this.localUser.t)
-          this.localUser.velocity = newVelocity;
-        else
-          this.localUser.velocity = this.localUser.t;
+
+        this.localUser.velocity = newVelocity;
+        break;
+      case 'ArrowDown':
+        newVelocity = this.localUser.velocity - 0.25;
+
+        this.localUser.velocity = newVelocity;
         break;
       case 'ArrowLeft':
         newAngularVelocity = this.localUser.angularVelocity - 0.375;
-        if (Math.abs(newAngularVelocity) < this.localUser.t)
-          this.localUser.angularVelocity = newAngularVelocity;
-        else
-          this.localUser.angularVelocity = this.localUser.t;
+        
+        this.localUser.angularVelocity = newAngularVelocity;
         break;
       case 'ArrowRight':
         newAngularVelocity = this.localUser.angularVelocity + 0.375;
-        if (Math.abs(this.localUser.angularVelocity) < this.localUser.t)
-          this.localUser.angularVelocity = newAngularVelocity
+
+        this.localUser.angularVelocity = newAngularVelocity;
         break;
     }
   }
@@ -137,12 +137,12 @@ export class RoomViewComponent implements OnInit {
   }
 
   updateDrags() {
-    if (this.localUser.velocity < 0.1) {
+    if (Math.abs(this.localUser.velocity) < 0.1) {
       this.localUser.velocity = 0;
       this.localUser.drag = 0;
     } else this.localUser.drag = this.localUser.velocity / 50;
 
-    if (this.localUser.angularVelocity < 0.1) {
+    if (Math.abs(this.localUser.angularVelocity) < 0.1) {
       this.localUser.angularVelocity = 0;
       this.localUser.angularDrag = 0;
     } else this.localUser.angularDrag = this.localUser.angularVelocity / 50;
@@ -159,20 +159,6 @@ export class RoomViewComponent implements OnInit {
   //   const differentSigns = (newVelocity: number) => Math.sign(newVelocity - change) != Math.sign(newVelocity);
 
   //   let newVelocity = this.localUser.velocity + change;
-  //   let newAngularVelocity = this.localUser.angularVelocity + angularChange;
-
-  //   if (this.localUser.velocity != 0 && !differentSigns(newVelocity))
-  //     this.localUser.velocity = newVelocity
-  //   else if (differentSigns(newVelocity))
-  //     this.localUser.velocity = 0
-    
-  //   if (this.localUser.angularVelocity != 0 && !differentSigns(newAngularVelocity))
-  //     this.localUser.angularVelocity = newAngularVelocity
-  //   else if (differentSigns(newAngularVelocity))
-  //     this.localUser.angularVelocity = 0;
-  // }
-
-  // New method:
   addDrags(this: RoomViewComponent) {
     this.localUser.velocity -= this.localUser.drag;
     this.localUser.angularVelocity -= this.localUser.angularDrag;
