@@ -5,7 +5,6 @@ import { UserDataService } from './../user-data.service';
 
 import { transformData } from './transform-data';
 import { WindowService } from '../window.service';
-import { ForwardRefHandling } from '@angular/compiler';
 
 @Component({
   selector: 'app-room-view',
@@ -70,6 +69,7 @@ export class RoomViewComponent implements OnInit {
       });
 
     setInterval(() => {
+      this.updateVelocities();
       this.updateDrags();
       this.addDrags();
       this.updateLocalUser();
@@ -91,29 +91,35 @@ export class RoomViewComponent implements OnInit {
   }
 
   @HostListener('window:keydown', ['$event'])
-  updateVelocities(this: RoomViewComponent, event: KeyboardEvent) {
+  onKeyDown(this: RoomViewComponent, event: KeyboardEvent) {
+    let code = event.code;
+    if (this._permittedKeys.includes(code) && !this._keysDown.includes(code))
+      this._keysDown.push(code);
+  }
+
+  @HostListener('window:keyup', ['$event'])
+  onKeyUp(this: RoomViewComponent, event: KeyboardEvent) {
+    let index = this._keysDown.indexOf(event.code);
+    delete this._keysDown[index];
+  }
+
+  updateVelocities(this: RoomViewComponent) {
     let newVelocity, newAngularVelocity;
-    switch (event.code) {
-      case 'ArrowUp':
-        newVelocity = this.localUser.velocity + 0.25
 
-        this.localUser.velocity = newVelocity;
-        break;
-      case 'ArrowDown':
-        newVelocity = this.localUser.velocity - 0.25;
+    if (this._keysDown.includes('ArrowUp')) {
+      newVelocity = this.localUser.velocity + 0.0625
 
-        this.localUser.velocity = newVelocity;
-        break;
-      case 'ArrowLeft':
-        newAngularVelocity = this.localUser.angularVelocity - 0.375;
-        
-        this.localUser.angularVelocity = newAngularVelocity;
-        break;
-      case 'ArrowRight':
-        newAngularVelocity = this.localUser.angularVelocity + 0.375;
+      this.localUser.velocity = newVelocity;
+    }
+    if (this._keysDown.includes('ArrowLeft')) {
+      newAngularVelocity = this.localUser.angularVelocity - 0.0234375;
 
-        this.localUser.angularVelocity = newAngularVelocity;
-        break;
+      this.localUser.angularVelocity = newAngularVelocity;
+    }
+    if (this._keysDown.includes('ArrowRight')) {
+      newAngularVelocity = this.localUser.angularVelocity + 0.0234375;
+
+      this.localUser.angularVelocity = newAngularVelocity;
     }
   }
 
@@ -137,15 +143,15 @@ export class RoomViewComponent implements OnInit {
   }
 
   updateDrags() {
-    if (Math.abs(this.localUser.velocity) < 0.1) {
+    if (Math.abs(this.localUser.velocity) < 0.025) {
       this.localUser.velocity = 0;
       this.localUser.drag = 0;
-    } else this.localUser.drag = this.localUser.velocity / 50;
+    } else this.localUser.drag = this.localUser.velocity / 35;
 
-    if (Math.abs(this.localUser.angularVelocity) < 0.1) {
+    if (Math.abs(this.localUser.angularVelocity) < 0.001) {
       this.localUser.angularVelocity = 0;
       this.localUser.angularDrag = 0;
-    } else this.localUser.angularDrag = this.localUser.angularVelocity / 50;
+    } else this.localUser.angularDrag = this.localUser.angularVelocity / 35;
   }
 
   // addDrags(this: RoomViewComponent) {
