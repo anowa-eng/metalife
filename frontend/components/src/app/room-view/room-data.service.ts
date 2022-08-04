@@ -13,4 +13,14 @@ export class RoomDataService {
   getInitialData(): Observable<any> {
     return this.httpService.httpClient.get('/api/get-initial-room-data', { responseType: 'json' });
   }
+
+  getCurrentRoom(): Observable<any> {
+    return new Observable((subscriber) => {
+      this.httpService.httpClient.get('/api/current-room', { responseType: 'text' })
+        .subscribe((data) => {
+          let currentRoomId = parseInt(data);
+          subscriber.next(currentRoomId)
+        });
+    });
+  }
 }

@@ -1,10 +1,11 @@
-import { Component, HostListener, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit, ɵɵsetComponentScope } from '@angular/core';
 
 import { RoomDataService } from './room-data.service';
 import { UserDataService } from './../user-data.service';
 
 import { transformData } from './transform-data';
 import { WindowService } from '../window.service';
+import { WebSocketService } from './web-socket.service';
 
 @Component({
   selector: 'app-room-view',
@@ -40,7 +41,8 @@ export class RoomViewComponent implements OnInit {
   constructor(
     private roomDataService: RoomDataService,
     private userDataService: UserDataService,
-    private windowService: WindowService
+    private webSocketService: WebSocketService,
+    private windowService: WindowService,
   ) {}
 
   getCenterLocation() {
@@ -55,7 +57,19 @@ export class RoomViewComponent implements OnInit {
     };
   }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<any> {
+    await this.webSocketService.init();
+    
+    // Send an initial message
+    let initialPosition = Object.assign({}, this.localUser.position);
+
+    this.webSocketService.webSocket?.subscribe();
+    this.webSocketService.webSocket?.next({
+      type: 'join',
+      initial_position: initialPosition,
+      user_id: this.localUser.id
+    });
+
     // Get initial data
     this.roomDataService.getInitialData()
       .subscribe((res) => {
@@ -68,12 +82,25 @@ export class RoomViewComponent implements OnInit {
         this.loadProfiles();
       });
 
+    let prev: any = null, current = null;
     setInterval(() => {
       this.updateVelocities();
       this.updateDrags();
       this.addDrags();
+
       this.updateLocalUser();
       this.updateData();
+
+      current = Object.assign({}, this.localUser.position);
+
+      console.log(JSON.stringify({
+        current: current,
+        prev: prev
+      }))
+
+      if (current != prev) this.sendMessage();
+      
+      prev = Object.assign({}, current);
     });
   }
 
@@ -87,7 +114,7 @@ export class RoomViewComponent implements OnInit {
 
   getProfileById(userInRoom: any) {
     let userId = userInRoom.user_id;
-    return this.userProfiles?.find((user) => user.userId === userId);
+    return this.userProfiles?.find((user) => user.userId == userId);
   }
 
   @HostListener('window:keydown', ['$event'])
@@ -131,7 +158,7 @@ export class RoomViewComponent implements OnInit {
   }
 
   updateData(this: RoomViewComponent) {
-    let user = this.untransformedData?.find((user) => user.user_id === this.localUser.id);
+    let user = this.untransformedData?.find((user) => user.user_id == this.localUser.id);
 
     if (user) {
       user.data.position = this.localUser.position;
@@ -146,12 +173,12 @@ export class RoomViewComponent implements OnInit {
     if (Math.abs(this.localUser.velocity) < 0.025) {
       this.localUser.velocity = 0;
       this.localUser.drag = 0;
-    } else this.localUser.drag = this.localUser.velocity / 35;
+    } else this.localUser.drag = this.localUser.velocity / 30;
 
     if (Math.abs(this.localUser.angularVelocity) < 0.001) {
       this.localUser.angularVelocity = 0;
       this.localUser.angularDrag = 0;
-    } else this.localUser.angularDrag = this.localUser.angularVelocity / 35;
+    } else this.localUser.angularDrag = this.localUser.angularVelocity / 30;
   }
 
   // addDrags(this: RoomViewComponent) {
@@ -168,6 +195,18 @@ export class RoomViewComponent implements OnInit {
   addDrags(this: RoomViewComponent) {
     this.localUser.velocity -= this.localUser.drag;
     this.localUser.angularVelocity -= this.localUser.angularDrag;
+  }
+
+  sendMessage() {
+    console.log('Message sent.');
+
+    let position = this.localUser.position;
+
+    this.webSocketService.webSocket?.next({
+      type: 'move',
+      new_position: position,
+      user_id: this.localUser.id
+    });
   }
 
 }

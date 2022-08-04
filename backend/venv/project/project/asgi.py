@@ -21,8 +21,6 @@ from app.routing import websocket_urlpatterns
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'project.settings')
 
 application = ProtocolTypeRouter({
-    'http': get_asgi_application(),
-
     'websocket': AllowedHostsOriginValidator(
         AuthMiddlewareStack(
             URLRouter(websocket_urlpatterns)

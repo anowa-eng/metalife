@@ -1,7 +1,7 @@
 export function transformData(userData: any, userId: number) {
     // Transform based on distance to user of ID userId
 
-    let user = userData.find((userInRoom: any) => userInRoom.user_id === userId);
+    let user = userData.find((userInRoom: any) => userInRoom.user_id == userId);
 
     let distances: any = {};
     for (const data of userData) {
