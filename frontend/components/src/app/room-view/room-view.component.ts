@@ -7,6 +7,8 @@ import { transformData } from './transform-data';
 import { WindowService } from '../window.service';
 import { WebSocketService } from './web-socket.service';
 
+import _ from 'lodash';
+
 @Component({
   selector: 'app-room-view',
   templateUrl: './room-view.component.html',
@@ -30,6 +32,8 @@ export class RoomViewComponent implements OnInit {
     angularDrag: 0,
     id: 1
   };
+
+  webSocketMsgs: any[] = [];
 
   _permittedKeys = [
     'ArrowLeft',
@@ -69,6 +73,7 @@ export class RoomViewComponent implements OnInit {
       initial_position: initialPosition,
       user_id: this.localUser.id
     });
+    this.webSocketService.webSocket?.subscribe((msg: any) => this.webSocketMsgs.push(msg));
 
     // Get initial data
     this.roomDataService.getInitialData()
@@ -82,7 +87,7 @@ export class RoomViewComponent implements OnInit {
         this.loadProfiles();
       });
 
-    let prev: any = null, current = null;
+    let prevPosition: any, currentPosition: any, prevDirection: number, currentDirection: number;
     setInterval(() => {
       this.updateVelocities();
       this.updateDrags();
@@ -91,16 +96,14 @@ export class RoomViewComponent implements OnInit {
       this.updateLocalUser();
       this.updateData();
 
-      current = Object.assign({}, this.localUser.position);
+      currentPosition = Object.assign({}, this.localUser.position);
+      currentDirection = this.localUser.direction;
 
-      console.log(JSON.stringify({
-        current: current,
-        prev: prev
-      }))
-
-      if (current != prev) this.sendMessage();
+      if (!_.isEqual(currentPosition, prevPosition)) this.sendPositionChangeMessage();
+      if (currentDirection !== prevDirection) this.sendDirectionChangeMessage();
       
-      prev = Object.assign({}, current);
+      prevPosition = Object.assign({}, currentPosition);
+      prevDirection = currentDirection
     });
   }
 
@@ -126,7 +129,7 @@ export class RoomViewComponent implements OnInit {
 
   @HostListener('window:keyup', ['$event'])
   onKeyUp(this: RoomViewComponent, event: KeyboardEvent) {
-    let index = this._keysDown.indexOf(event.code);
+    let index = _.indexOf(this._keysDown, event.code)
     delete this._keysDown[index];
   }
 
@@ -134,7 +137,7 @@ export class RoomViewComponent implements OnInit {
     let newVelocity, newAngularVelocity;
 
     if (this._keysDown.includes('ArrowUp')) {
-      newVelocity = this.localUser.velocity + 0.0625
+      newVelocity = this.localUser.velocity + 0.046875
 
       this.localUser.velocity = newVelocity;
     }
@@ -197,9 +200,7 @@ export class RoomViewComponent implements OnInit {
     this.localUser.angularVelocity -= this.localUser.angularDrag;
   }
 
-  sendMessage() {
-    console.log('Message sent.');
-
+  sendPositionChangeMessage() {
     let position = this.localUser.position;
 
     this.webSocketService.webSocket?.next({
@@ -207,6 +208,20 @@ export class RoomViewComponent implements OnInit {
       new_position: position,
       user_id: this.localUser.id
     });
+  }
+
+  sendDirectionChangeMessage() {
+    let direction = this.localUser.direction
+
+    this.webSocketService.webSocket?.next({
+      type: 'direction.change',
+      new_direction: direction,
+      user_id: this.localUser.id
+    })
+  }
+
+  onMessage(content: any) {
+    console.log(content);
   }
 
 }

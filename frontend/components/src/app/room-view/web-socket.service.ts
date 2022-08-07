@@ -8,8 +8,7 @@ import { RoomViewComponent } from './room-view.component';
   providedIn: 'root'
 })
 export class WebSocketService {
-  webSocket?: WebSocketSubject<any>;
-  msgs: any[] = [];
+  webSocket?: WebSocketSubject<any>;;
   
   constructor(private roomDataService: RoomDataService) {
   }
