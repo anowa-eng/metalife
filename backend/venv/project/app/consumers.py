@@ -1,8 +1,9 @@
+from cgitb import text
 from datetime import datetime
 import json
 import re
 from asgiref.sync import sync_to_async
-from channels.generic.websocket import AsyncWebsocketConsumer
+from channels.generic.websocket import AsyncJsonWebsocketConsumer
 
 from .models import *
 
@@ -12,19 +13,21 @@ def group_name_of(room_consumer):
     group_name = f'room_{room_id}'
     return group_name
     
-class RoomConsumer(AsyncWebsocketConsumer):
+class RoomConsumer(AsyncJsonWebsocketConsumer):
     async def connect(self):
+        await self.accept()
+        
         self.group_name = group_name_of(self)
         await self.channel_layer.group_add(self.group_name, self.channel_name)
-
-        await self.accept()
     
     async def disconnect(self, code):
         await self.channel_layer.group_discard(self.group_name, self.channel_name)
-        await self.close(code)
 
-    async def receive(self, text_data=None):
-        await self.channel_layer.group_send(self.group_name, {'type': 'testing', 'msg': 'hi'})
+    async def receive_json(self, event):
+        await self.channel_layer.group_send(self.group_name, {
+            'type': 'room_update',
+            'event': event
+        })
 
     # Room events
     async def join(self, event):
@@ -43,8 +46,6 @@ class RoomConsumer(AsyncWebsocketConsumer):
         y = new_position['y']
 
         ordered_pair_string = f'({x}, {y})'
-
-        print(f'{user_name} moved to {ordered_pair_string} in {room_name} at {date}')
     
     async def direction_change(self, event):
         user_name = (await sync_to_async(User.objects.get)(id=event['user_id'])).username
@@ -52,9 +53,6 @@ class RoomConsumer(AsyncWebsocketConsumer):
 
         degrees = event['new_direction']
 
-        print(f'{user_name}\'s direction changed to {degrees}\u00b0')
-
-    # Test
-    async def testing(self, event):
-        print(event['msg'])
-    
+    # Send back the event
+    async def room_update(self, event):
+        await self.send_json(event['event'])

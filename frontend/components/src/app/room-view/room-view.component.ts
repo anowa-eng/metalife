@@ -1,4 +1,4 @@
-import { Component, HostListener, OnInit, ɵɵsetComponentScope } from '@angular/core';
+import { Component, EventEmitter, HostListener, OnInit } from '@angular/core';
 
 import { RoomDataService } from './room-data.service';
 import { UserDataService } from './../user-data.service';
@@ -8,6 +8,7 @@ import { WindowService } from '../window.service';
 import { WebSocketService } from './web-socket.service';
 
 import _ from 'lodash';
+import { LocalUser } from './local-user';
 
 @Component({
   selector: 'app-room-view',
@@ -19,7 +20,7 @@ export class RoomViewComponent implements OnInit {
   data!: any[];
   userProfiles!: any[];
 
-  localUser = {
+  localUser: LocalUser = {
     position: {
       x: 0,
       y: 0
@@ -27,13 +28,15 @@ export class RoomViewComponent implements OnInit {
     direction: 0,
     velocity: 0,
     angularVelocity: 0,
-    // t: 1.5,
     drag: 0,
     angularDrag: 0,
-    id: 1
-  };
+    id: 1,
 
-  webSocketMsgs: any[] = [];
+    hist: {
+      prevPosition: null,
+      prevDirection: null
+    }
+  };
 
   _permittedKeys = [
     'ArrowLeft',
@@ -41,6 +44,8 @@ export class RoomViewComponent implements OnInit {
     'ArrowUp'
   ];
   _keysDown: string[] = [];
+
+  changeEventEmitter?: EventEmitter<string> = new EventEmitter();
 
   constructor(
     private roomDataService: RoomDataService,
@@ -62,6 +67,8 @@ export class RoomViewComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<any> {
+    console.log(this.changeEventEmitter);
+    
     await this.webSocketService.init();
     
     // Send an initial message
@@ -73,7 +80,6 @@ export class RoomViewComponent implements OnInit {
       initial_position: initialPosition,
       user_id: this.localUser.id
     });
-    this.webSocketService.webSocket?.subscribe((msg: any) => this.webSocketMsgs.push(msg));
 
     // Get initial data
     this.roomDataService.getInitialData()
@@ -87,7 +93,6 @@ export class RoomViewComponent implements OnInit {
         this.loadProfiles();
       });
 
-    let prevPosition: any, currentPosition: any, prevDirection: number, currentDirection: number;
     setInterval(() => {
       this.updateVelocities();
       this.updateDrags();
@@ -96,15 +101,11 @@ export class RoomViewComponent implements OnInit {
       this.updateLocalUser();
       this.updateData();
 
-      currentPosition = Object.assign({}, this.localUser.position);
-      currentDirection = this.localUser.direction;
-
-      if (!_.isEqual(currentPosition, prevPosition)) this.sendPositionChangeMessage();
-      if (currentDirection !== prevDirection) this.sendDirectionChangeMessage();
-      
-      prevPosition = Object.assign({}, currentPosition);
-      prevDirection = currentDirection
+      this.emitChangeEvents();
     });
+
+    this.changeEventEmitter?.subscribe((eventType) => this.onLocalUserMoved(eventType));
+    this.webSocketService.webSocket?.subscribe((msg: any) => this.onMessage(msg));
   }
 
   loadProfiles() {
@@ -153,7 +154,23 @@ export class RoomViewComponent implements OnInit {
     }
   }
 
+  emitChangeEvents() {
+    let currentPosition = this.localUser.position,
+      prevPosition = this.localUser.hist.prevPosition,
+      currentDirection = this.localUser.direction,
+      prevDirection = this.localUser.hist.prevDirection;
+
+    console.log(_.isEqual(currentPosition, this.localUser.hist.prevPosition))
+    if (!_.isEqual(currentPosition, prevPosition))
+      this.changeEventEmitter?.emit('positionChange');
+    if (currentDirection !== prevDirection)
+      this.changeEventEmitter?.emit('directionChange');
+  }
+
   updateLocalUser(this: RoomViewComponent) {
+    this.localUser.hist.prevPosition = Object.assign({}, this.localUser.position);
+    this.localUser.hist.prevDirection = this.localUser.direction;
+
     this.localUser.position.y += Math.sin((this.localUser.direction - 90) * (Math.PI / 180)) * this.localUser.velocity;
     this.localUser.position.x += Math.cos((this.localUser.direction - 90) * (Math.PI / 180)) * this.localUser.velocity;
 
@@ -211,7 +228,7 @@ export class RoomViewComponent implements OnInit {
   }
 
   sendDirectionChangeMessage() {
-    let direction = this.localUser.direction
+    let direction = this.localUser.direction;
 
     this.webSocketService.webSocket?.next({
       type: 'direction.change',
@@ -220,8 +237,22 @@ export class RoomViewComponent implements OnInit {
     })
   }
 
-  onMessage(content: any) {
-    console.log(content);
+  onLocalUserMoved(eventType: string) {
+    console.log(eventType);
+    switch (eventType) {
+      case 'positionChange':
+        this.sendPositionChangeMessage();
+        break;
+      case 'directionChange':
+        this.sendDirectionChangeMessage();
+        break;
+      default:
+        break;
+    }
+  }
+
+  onMessage(event: any) {
+    // To be written later
   }
 
 }
