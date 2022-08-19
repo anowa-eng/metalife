@@ -1,58 +1,35 @@
-from cgitb import text
-from datetime import datetime
-import json
-import re
-from asgiref.sync import sync_to_async
-from channels.generic.websocket import AsyncJsonWebsocketConsumer
+from djangochannelsrestframework.generics import GenericAsyncAPIConsumer
+from djangochannelsrestframework import permissions
+from djangochannelsrestframework.observer import model_observer
+from djangochannelsrestframework.decorators import action, database_sync_to_async
+from rest_framework import status
+
+from .serializers import RoomSerializer
 
 from .models import *
-
-def group_name_of(room_consumer):
-    room_id = room_consumer.scope['url_route']['kwargs']['id']
-
-    group_name = f'room_{room_id}'
-    return group_name
     
-class RoomConsumer(AsyncJsonWebsocketConsumer):
-    async def connect(self):
-        await self.accept()
-        
-        self.group_name = group_name_of(self)
-        await self.channel_layer.group_add(self.group_name, self.channel_name)
+class RoomConsumer(GenericAsyncAPIConsumer):
+    queryset = Room.objects.all()
+    serializer_class = RoomSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+
+    @action()
+    async def join(self, initial_position, user_id):
+        self.join_room_as(user_id)
     
-    async def disconnect(self, code):
-        await self.channel_layer.group_discard(self.group_name, self.channel_name)
+    @database_sync_to_async
+    async def join_room_as(self, initial_position, user_id):
+        room_id = self.scope['url_route']['kwargs']['id']
 
-    async def receive_json(self, event):
-        await self.channel_layer.group_send(self.group_name, {
-            'type': 'room_update',
-            'event': event
-        })
+        user = User.objects.get(pk=user_id)
+        room = Room.objects.get(pk=room_id)
 
-    # Room events
-    async def join(self, event):
-        user_name = (await sync_to_async(User.objects.get)(id=event['user_id'])).username
-        room_name = self.group_name
-        date = datetime.now()
-        print(f'{user_name} joined the room {room_name} at {date}')
-
-    async def move(self, event):
-        user_name = (await sync_to_async(User.objects.get)(id=event['user_id'])).username
-        room_name = self.group_name
-        date = datetime.now()
-        new_position = event['new_position']
-
-        x = new_position['x']
-        y = new_position['y']
-
-        ordered_pair_string = f'({x}, {y})'
+        user_in_room_data = UserInRoomData.objects.create(**initial_position, direction=0)
+        user_in_room = UserInRoom.objects.create(
+            user=user,
+            room=room,
+            data=user_in_room_data
+        )
     
-    async def direction_change(self, event):
-        user_name = (await sync_to_async(User.objects.get)(id=event['user_id'])).username
-        room_name = self.group_name
-
-        degrees = event['new_direction']
-
-    # Send back the event
-    async def room_update(self, event):
-        await self.send_json(event['event'])
+    @model_observer()
+    

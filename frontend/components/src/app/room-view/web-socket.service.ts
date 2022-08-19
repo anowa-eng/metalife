@@ -14,7 +14,7 @@ export class WebSocketService {
   }
 
   async init() {
-    let currentRoomId = await firstValueFrom(this.roomDataService.getCurrentRoom());
+    let currentRoomId = await firstValueFrom(this.roomDataService.getCurrentRoomId());
 
     let url = `ws://localhost:8000/ws/room/${currentRoomId}`
     this.webSocket = webSocket(url);

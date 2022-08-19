@@ -9,6 +9,7 @@ import { WebSocketService } from './web-socket.service';
 
 import _ from 'lodash';
 import { LocalUser } from './local-user';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-room-view',
@@ -76,9 +77,10 @@ export class RoomViewComponent implements OnInit {
 
     this.webSocketService.webSocket?.subscribe();
     this.webSocketService.webSocket?.next({
-      type: 'join',
+      action: 'join',
       initial_position: initialPosition,
-      user_id: this.localUser.id
+      user_id: this.localUser.id,
+      request_id: this.localUser.id
     });
 
     // Get initial data
@@ -160,7 +162,6 @@ export class RoomViewComponent implements OnInit {
       currentDirection = this.localUser.direction,
       prevDirection = this.localUser.hist.prevDirection;
 
-    console.log(_.isEqual(currentPosition, this.localUser.hist.prevPosition))
     if (!_.isEqual(currentPosition, prevPosition))
       this.changeEventEmitter?.emit('positionChange');
     if (currentDirection !== prevDirection)

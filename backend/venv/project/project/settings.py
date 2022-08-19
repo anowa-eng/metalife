@@ -35,6 +35,8 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'channels',
+    
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -43,8 +45,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'app',
-
-    'channels',
 
     'rest_framework'
 ]
@@ -57,6 +57,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'log_request_id.middleware.RequestIDMiddleware'
 ]
 
 ROOT_URLCONF = 'project.urls'

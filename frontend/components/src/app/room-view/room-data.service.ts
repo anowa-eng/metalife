@@ -14,7 +14,7 @@ export class RoomDataService {
     return this.httpService.httpClient.get('/api/get-initial-room-data', { responseType: 'json' });
   }
 
-  getCurrentRoom(): Observable<any> {
+  getCurrentRoomId(): Observable<any> {
     return new Observable((subscriber) => {
       this.httpService.httpClient.get('/api/current-room', { responseType: 'text' })
         .subscribe((data) => {
