@@ -79,8 +79,7 @@ export class RoomViewComponent implements OnInit {
     this.webSocketService.webSocket?.next({
       action: 'join',
       initial_position: initialPosition,
-      user_id: this.localUser.id,
-      request_id: this.localUser.id
+      user_id: this.localUser.id
     });
 
     // Get initial data
