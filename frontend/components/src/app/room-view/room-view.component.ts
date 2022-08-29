@@ -68,8 +68,6 @@ export class RoomViewComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<any> {
-    console.log(this.changeEventEmitter);
-    
     await this.webSocketService.init();
     
     // Send an initial message
@@ -79,7 +77,8 @@ export class RoomViewComponent implements OnInit {
     this.webSocketService.webSocket?.next({
       action: 'join',
       initial_position: initialPosition,
-      user_id: this.localUser.id
+      user_id: this.localUser.id,
+      request_id: this.localUser.id
     });
 
     // Get initial data

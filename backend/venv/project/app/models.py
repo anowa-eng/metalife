@@ -31,6 +31,7 @@ class UserInRoomData(models.Model):
     y = models.PositiveBigIntegerField()
 
     direction = models.PositiveSmallIntegerField()
+
     class Meta:
         verbose_name_plural = 'user in room data'
 class UserInRoom(models.Model):

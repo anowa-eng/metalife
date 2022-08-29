@@ -2,7 +2,7 @@ param (
     [bool]$Build
 )
 
-$App="C:\Users\georg\sympan"
+$App="C:\Users\georg\Downloads\Projects\sympan"
 $Backend="$App\backend\"
 $Frontend="$App\frontend\"
 

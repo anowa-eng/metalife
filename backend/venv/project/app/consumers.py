@@ -1,43 +1,54 @@
-from djangochannelsrestframework.consumers import AsyncAPIConsumer
+from urllib import request
+from djangochannelsrestframework.generics import GenericAsyncAPIConsumer
 from djangochannelsrestframework import permissions
-from djangochannelsrestframework.observer import model_observer, observer
 from djangochannelsrestframework.decorators import action, database_sync_to_async
 
 from .serializers import RoomSerializer
-from . import signals
 from .models import *
-    
-class RoomConsumer(AsyncAPIConsumer):
+
+class RoomConsumer(GenericAsyncAPIConsumer):
     queryset = Room.objects.all()
     serializer_class = RoomSerializer
 
-    async def accept(self):
-        self.handle_joined_room_signal.subscribe(self)
-        return await super().accept()
+    room_id = None
+    user_in_room_id = None
+
+    async def accept(self, **kwargs):
+        await super().accept()
+    
+    async def disconnect(self, code):
+        await self.remove_user_from_room()
+        await super().disconnect(code)
 
     @action()
-    def join(self, request_id, initial_position=None, user_id=None):
-        signals.joined_room_signal.send('join', initial_position=initial_position, user_id=user_id)
-
-        return {'test': 'hello'}, 200
-
-    @observer(signals.joined_room_signal)
-    def handle_joined_room_signal(self, initial_position, user_id, observer=None, subscribing_request_ids=[]):
-        for request_id in subscribing_request_ids:
-            self.reply('msg', {'test': 'hello'}, status=200, request_id=request_id)
-
-    @handle_joined_room_signal.groups_for_consumer
-    def joined_room_signal_groups_for_consumer(self):
-        room_id = self.scope['url_route']['kwargs']['id']
-        yield f'room-{room_id}'
+    async def join(self, action, request_id, room_id=None, initial_position=None, user_id=None):
+        user_in_room = await self.create_user_in_room(room_id, initial_position, user_id)
+        self.user_in_room_id = user_in_room.id
 
     @database_sync_to_async
-    def get_room(pk):
-        return Room.objects.get(pk=pk)
-    
-    @database_sync_to_async
-    def join_room_as():
-        pass
-    
+    def create_user_in_room(self, room_id, initial_position, user_id):
+        user_in_room_data = UserInRoomData.objects.create(
+            x=initial_position['x'],
+            y=initial_position['y'],
+            direction=0
+        )
 
-    
+        user = User.objects.get(pk=user_id)
+        room = self.get_object(pk=room_id)
+        user_in_room = UserInRoom.objects.create(
+            user=user,
+            room=room,
+            data=user_in_room_data
+        )
+
+        return user_in_room
+
+    @database_sync_to_async
+    def remove_user_from_room(self):
+        user_in_room_id = self.user_in_room_id
+
+        user_in_room = UserInRoom.objects.get(pk=user_in_room_id)
+        user_in_room_data = user_in_room.userinroomdata_set.all()
+
+        user_in_room_data.delete()
+        user_in_room.delete()
