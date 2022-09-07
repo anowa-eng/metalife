@@ -1,4 +1,3 @@
-from urllib import request
 from djangochannelsrestframework.generics import GenericAsyncAPIConsumer
 from djangochannelsrestframework import permissions
 from djangochannelsrestframework.decorators import action, database_sync_to_async
@@ -23,7 +22,7 @@ class RoomConsumer(GenericAsyncAPIConsumer):
     @action()
     async def join(self, action, request_id, room_id=None, initial_position=None, user_id=None):
         user_in_room = await self.create_user_in_room(room_id, initial_position, user_id)
-        self.user_in_room_id = user_in_room.id
+        self.scope['session']['user_in_room_id'] = user_in_room.id
 
     @database_sync_to_async
     def create_user_in_room(self, room_id, initial_position, user_id):
@@ -45,7 +44,7 @@ class RoomConsumer(GenericAsyncAPIConsumer):
 
     @database_sync_to_async
     def remove_user_from_room(self):
-        user_in_room_id = self.user_in_room_id
+        user_in_room_id = self.scope['session']['user_in_room_id']
 
         user_in_room = UserInRoom.objects.get(pk=user_in_room_id)
         user_in_room_data = user_in_room.userinroomdata_set.all()
