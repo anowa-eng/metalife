@@ -34,13 +34,12 @@ class RoomConsumer(GenericAsyncAPIConsumer):
 
         user = User.objects.get(pk=user_id)
         room = self.get_object(pk=room_id)
-        user_in_room = UserInRoom.objects.create(
+        
+        return UserInRoom.objects.create(
             user=user,
             room=room,
             data=user_in_room_data
         )
-
-        return user_in_room
 
     @database_sync_to_async
     def remove_user_from_room(self):
