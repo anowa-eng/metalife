@@ -10,6 +10,7 @@ import { WebSocketService } from './web-socket.service';
 import _ from 'lodash';
 import { LocalUser } from './local-user';
 import { firstValueFrom } from 'rxjs';
+import { Position } from './position';
 
 @Component({
   selector: 'app-room-view',
@@ -47,6 +48,8 @@ export class RoomViewComponent implements OnInit {
   _keysDown: string[] = [];
 
   changeEventEmitter?: EventEmitter<string> = new EventEmitter();
+
+  frames: Position[] = [];
 
   constructor(
     private roomDataService: RoomDataService,
@@ -100,6 +103,7 @@ export class RoomViewComponent implements OnInit {
 
       this.updateLocalUser();
       this.updateData();
+      this.frames?.push(this.localUser.position)
 
       this.emitChangeEvents();
     });
@@ -216,24 +220,15 @@ export class RoomViewComponent implements OnInit {
     this.localUser.angularVelocity -= this.localUser.angularDrag;
   }
 
-  sendPositionChangeMessage() {
+  sendMessage() {
     let position = this.localUser.position;
+    let direction = this.localUser.direction;
 
     this.webSocketService.webSocket?.next({
       type: 'move',
       new_position: position,
       user_id: this.localUser.id
     });
-  }
-
-  sendDirectionChangeMessage() {
-    let direction = this.localUser.direction;
-
-    this.webSocketService.webSocket?.next({
-      type: 'direction.change',
-      new_direction: direction,
-      user_id: this.localUser.id
-    })
   }
 
   onLocalUserMoved(eventType: string) {

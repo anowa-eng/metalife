@@ -8,7 +8,7 @@ import { RoomViewComponent } from './room-view.component';
   providedIn: 'root'
 })
 export class WebSocketService {
-  webSocket?: WebSocketSubject<any>;
+  private webSocket?: WebSocketSubject<any>;
   
   constructor(private roomDataService: RoomDataService) {
   }
@@ -19,4 +19,6 @@ export class WebSocketService {
     let url = `ws://localhost:8000/ws/room/${currentRoomId}`
     this.webSocket = webSocket(url);
   }
+
+
 }

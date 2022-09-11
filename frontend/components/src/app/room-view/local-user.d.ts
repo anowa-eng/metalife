@@ -1,8 +1,7 @@
+import { Position } from "./position";
+
 export interface LocalUser {
-  position: {
-    x: number;
-    y: number;
-  };
+  position: Position;
   direction: number;
   velocity: number;
   angularVelocity: number;
@@ -11,10 +10,7 @@ export interface LocalUser {
   id: number;
 
   hist: {
-    prevPosition: {
-      x: number | null;
-      y: number | null;
-    } | null;
+    prevPosition: Position | null;
     prevDirection: number | null;
   };
 }
