@@ -1,3 +1,5 @@
+from operator import mod
+from pyexpat import model
 from django.db import models
 
 # Create your models here.
@@ -20,12 +22,11 @@ class Room(models.Model):
 
     def __str__(self):
         return self.name
-class InvitedUser(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+class Request(models.Model):
+    request_id = models.PositiveBigIntegerField()
     room = models.ForeignKey(Room, on_delete=models.CASCADE)
 
-    def __str__(self):
-        return self.user.username
 class UserInRoomData(models.Model):
     x = models.PositiveBigIntegerField()
     y = models.PositiveBigIntegerField()
@@ -44,3 +45,11 @@ class UserInRoom(models.Model):
         return f'{self.user} in {self.room.name}'
     class Meta:
         verbose_name_plural = 'users in rooms'
+
+class InvitedUser(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    room = models.ForeignKey(Room, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.user.username
+

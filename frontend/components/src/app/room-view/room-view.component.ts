@@ -233,20 +233,20 @@ export class RoomViewComponent implements OnInit {
 
   onLocalUserMoved(eventType: string) {
     console.log(eventType);
-    switch (eventType) {
-      case 'positionChange':
-        this.sendPositionChangeMessage();
-        break;
-      case 'directionChange':
-        this.sendDirectionChangeMessage();
-        break;
-      default:
-        break;
-    }
+    // switch (eventType) {
+    //   case 'positionChange':
+    //     this.sendPositionChangeMessage();
+    //     break;
+    //   case 'directionChange':
+    //     this.sendDirectionChangeMessage();
+    //     break;
+    //   default:
+    //     break;
+    // }
   }
 
   onMessage(event: any) {
-    // To be written later
+    console.log(event);
   }
 
 }

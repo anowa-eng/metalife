@@ -17,15 +17,18 @@ class RoomConsumer(GenericAsyncAPIConsumer):
         await super().accept()
     
     async def disconnect(self, code):
-        await self.remove_user_from_room()
+        await self.leave_room()
         await super().disconnect(code)
 
     @action()
-    async def join(self, action, request_id, room_id=None, initial_position=None, user_id=None):
+    async def join(self, action, request_id, room_id=1, initial_position=None, user_id=None):
         user_in_room = await self.create_user_in_room(room_id, initial_position, user_id)
         user_in_room_id = user_in_room.id
 
         self.scope['session']['user_in_room_id'] = user_in_room_id
+        print(user_in_room_id)
+
+        return {}, 200
 
     @database_sync_to_async
     def create_user_in_room(self, room_id, initial_position, user_id):
@@ -37,6 +40,7 @@ class RoomConsumer(GenericAsyncAPIConsumer):
 
         user = User.objects.get(pk=user_id)
         room = self.get_object(pk=room_id)
+
         user_in_room = UserInRoom.objects.create(
             user=user,
             room=room,
@@ -44,9 +48,12 @@ class RoomConsumer(GenericAsyncAPIConsumer):
         )
 
         return user_in_room
+
+    @database_sync_to_async
+    def create_request_id()
     
     @database_sync_to_async
-    def remove_user_from_room(self):
+    def leave_room(self):
         user_in_room_id = self.scope['session']['user_in_room_id']
 
         user_in_room = UserInRoom.objects.get(pk=user_in_room_id)
