@@ -22,8 +22,7 @@ class Room(models.Model):
 
     def __str__(self):
         return self.name
-
-class Request(models.Model):
+class SubscribingRequest(models.Model):
     request_id = models.PositiveBigIntegerField()
     room = models.ForeignKey(Room, on_delete=models.CASCADE)
 

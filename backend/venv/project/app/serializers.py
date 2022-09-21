@@ -25,6 +25,14 @@ class InvitedUserSerializer(serializers.ModelSerializer):
         model = InvitedUser
         fields = ('user', 'room')
 class UserInRoomSerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+    room = serializers.PrimaryKeyRelatedField(queryset=Room.objects.all())
+    data = UserInRoomDataSerializer()
+
     class Meta:
         model = UserInRoom
-        fields = ('user', 'room', 'data')
+        fields = '__all__'
+
+        
+
+
