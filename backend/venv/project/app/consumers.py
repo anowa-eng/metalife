@@ -14,9 +14,6 @@ class RoomConsumer(GenericAsyncAPIConsumer):
     queryset = Room.objects.all()
     serializer_class = RoomSerializer
 
-    room_id = None
-    user_in_room_id = None
-
     async def accept(self, **kwargs):
         await super().accept()
         await self.handle_join_signal.subscribe()

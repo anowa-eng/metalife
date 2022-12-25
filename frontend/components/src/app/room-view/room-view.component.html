@@ -1,8 +1,14 @@
-<svg xmlns="http://www.w3.org/2000/svg" height="50">
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  height="50"
+  preserveAspectRatio="xMidYMid"
+  attr.viewBox="0 0 {{getDimensions().width}} {{getDimensions().height}}"
+>
+  <!-- Experiment in line 5 or so -->
   <defs>
     <ng-container *ngIf="userProfiles">
       <pattern
-        id="user-{{userProfile.userId}}"
+        id="pattern-user-{{userProfile.userId}}"
         x="0"
         y="0"
         width="25"
@@ -17,14 +23,15 @@
       </pattern>
     </ng-container>
   </defs>
-  <g attr.transform="rotate({{-(localUser.direction || 0)}} {{getCenterLocation().x}} {{getCenterLocation().y}})">
+  <g attr.transform="rotate({{-(localUser.direction || 0)}} {{getCenterLocation().x}} {{getCenterLocation().y}})" #roomView>
     <circle
       [attr.r]="12.5"
       [attr.cx]="userInRoom.position.x"
       [attr.cy]="userInRoom.position.y"
-      attr.fill="url(#user-{{getProfileById(userInRoom)?.userId}})"
+      attr.fill="url(#pattern-user-{{getProfileById(userInRoom)?.userId}})"
       attr.transform="rotate({{userInRoom.direction}} {{userInRoom.position.x}} {{userInRoom.position.y}})"
       class="user"
+      id="user-{{getProfileById(userInRoom)?.userId}}"
       *ngFor="let userInRoom of data" />
   </g>
 </svg>

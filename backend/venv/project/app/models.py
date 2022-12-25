@@ -27,8 +27,8 @@ class SubscribingRequest(models.Model):
     room = models.ForeignKey(Room, on_delete=models.CASCADE)
 
 class UserInRoomData(models.Model):
-    x = models.PositiveBigIntegerField()
-    y = models.PositiveBigIntegerField()
+    x = models.FloatField()
+    y = models.FloatField()
 
     direction = models.PositiveSmallIntegerField()
 

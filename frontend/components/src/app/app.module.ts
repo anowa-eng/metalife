@@ -7,13 +7,11 @@ import { HttpClientModule } from '@angular/common/http';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { RoomViewComponent } from './room-view/room-view.component';
-import { DataEditorComponent } from './data-editor/data-editor.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    RoomViewComponent,
-    DataEditorComponent,
+    RoomViewComponent
   ],
   imports: [
     BrowserModule,
@@ -25,8 +23,7 @@ import { DataEditorComponent } from './data-editor/data-editor.component';
   ],
   exports: [
     AppComponent,
-    RoomViewComponent,
-    DataEditorComponent
+    RoomViewComponent
   ],
   providers: [],
   bootstrap: [AppComponent]

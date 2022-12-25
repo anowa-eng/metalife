@@ -1,4 +1,4 @@
-import { Component, EventEmitter, HostListener, OnInit } from '@angular/core';
+import { Component, ElementRef, EventEmitter, HostListener, OnInit, ViewChild } from '@angular/core';
 
 import { RoomDataService } from './room-data.service';
 import { UserDataService } from './../user-data.service';
@@ -9,8 +9,11 @@ import { WebSocketService } from './web-socket.service';
 
 import _ from 'lodash';
 import { LocalUser } from './local-user';
-import { firstValueFrom } from 'rxjs';
+
 import { Position } from './position';
+import { UserPositionData } from './user-position-data';
+import { Distances } from './distances';
+import { UserRadiusService } from './user-radius.service';
 
 @Component({
   selector: 'app-room-view',
@@ -19,7 +22,7 @@ import { Position } from './position';
 })
 export class RoomViewComponent implements OnInit {
   untransformedData?: any[];
-  data!: any[];
+  data!: UserPositionData[];
   userProfiles!: any[];
 
   localUser: LocalUser = {
@@ -51,12 +54,24 @@ export class RoomViewComponent implements OnInit {
 
   frames: Position[] = [];
 
+  @ViewChild('roomView')
+  roomView?: ElementRef;
+
   constructor(
     private roomDataService: RoomDataService,
     private userDataService: UserDataService,
     private webSocketService: WebSocketService,
     private windowService: WindowService,
+    private userDimensionsService: UserRadiusService
   ) {}
+
+  getDimensions() {
+    return this.windowService.getDimensions();
+  }
+
+  getUserRadius() {
+    this.userDimensionsService.elementRef = this.roomView;
+  }
 
   getCenterLocation() {
     let dimensions = this.windowService.getDimensions();
@@ -101,7 +116,8 @@ export class RoomViewComponent implements OnInit {
       this.updateDrags();
       this.addDrags();
 
-      this.updateLocalUser();
+      if (this.localUser.velocity || this.localUser.angularVelocity)
+        this.updateLocalUser();
       this.updateData();
       this.frames?.push(this.localUser.position)
 
@@ -138,6 +154,51 @@ export class RoomViewComponent implements OnInit {
     delete this._keysDown[index];
   }
 
+  _overlappingUserPixelsAt({ x, y }: Position): any {
+    const diameter = 25;
+
+    let users = this.untransformedData?.filter((user) => user.user_id !== this.localUser.id);
+
+    if (users) {
+      function getDistanceFrom(pos: Position): number {
+        let coords = {
+          x: Math.abs(x - pos.x),
+          y: Math.abs(y - pos.y)
+        };
+
+        let distance = coords.x + coords.y;
+
+        return distance;
+      }
+
+      let distances: Distances = {};
+      for (const user of users) {
+        distances[user.user_id] = getDistanceFrom(user.data.position);
+      }
+
+      let isTouchingUsers = {};
+      for (const pair of Object.entries(distances)) {
+        let userId = Number(pair[0]),
+          distance = pair[1];
+
+        isTouchingUsers[userId] = distance < diameter;
+      }
+      
+      return isTouchingUsers;
+    }
+  }
+
+  userTouchedAt({ x, y }: Position) {
+    let usersTouched = this._overlappingUserPixelsAt({ x, y });
+
+    var userIds = Object.keys(usersTouched || {})
+      .filter((k) => usersTouched[k])
+      .map((userId) => Number(userId))
+      [0];
+
+    return userIds;
+  }
+
   updateVelocities(this: RoomViewComponent) {
     let newVelocity, newAngularVelocity;
 
@@ -170,18 +231,44 @@ export class RoomViewComponent implements OnInit {
       this.changeEventEmitter?.emit('directionChange');
   }
 
+  moved() {
+    return !(_.isEqual(this.localUser.position, this.localUser.hist.prevPosition))
+  }
+
   updateLocalUser(this: RoomViewComponent) {
+    let newPosition = {
+      y: this.localUser.position.y + Math.sin((this.localUser.direction - 90) * (Math.PI / 180)) * this.localUser.velocity,
+      x: this.localUser.position.x + Math.cos((this.localUser.direction - 90) * (Math.PI / 180)) * this.localUser.velocity
+    };
+
     this.localUser.hist.prevPosition = Object.assign({}, this.localUser.position);
     this.localUser.hist.prevDirection = this.localUser.direction;
 
-    this.localUser.position.y += Math.sin((this.localUser.direction - 90) * (Math.PI / 180)) * this.localUser.velocity;
-    this.localUser.position.x += Math.cos((this.localUser.direction - 90) * (Math.PI / 180)) * this.localUser.velocity;
+    let idOfCollidedUser = this.userTouchedAt(newPosition);
+    if (idOfCollidedUser) {
+      let collidedUser = this.untransformedData?.find((user) => user.user_id === idOfCollidedUser).data,
+        diameter = 25;
+
+      let angle = Math.atan2(
+        collidedUser.position.y - newPosition.y,
+        collidedUser.position.x - newPosition.x
+      );
+      console.log(`(user ${idOfCollidedUser}: ${angle} degrees`);
+      let position = {
+        x: this.localUser.position.x + (diameter * Math.cos(angle)),
+        y: this.localUser.position.y + (diameter * Math.sin(angle))
+      };
+
+      this.localUser.position = position;
+    } else {
+      this.localUser.position = newPosition;
+    }
 
     this.localUser.direction += this.localUser.angularVelocity;
   }
 
   updateData(this: RoomViewComponent) {
-    let user = this.untransformedData?.find((user) => user.user_id == this.localUser.id);
+    let user = this.untransformedData?.find((user) => user.user_id === this.localUser.id);
 
     if (user) {
       user.data.position = this.localUser.position;
@@ -232,7 +319,6 @@ export class RoomViewComponent implements OnInit {
   }
 
   onLocalUserMoved(eventType: string) {
-    console.log(eventType);
     // switch (eventType) {
     //   case 'positionChange':
     //     this.sendPositionChangeMessage();
