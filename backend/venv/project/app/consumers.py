@@ -1,10 +1,11 @@
-from urllib.request import DataHandler
 from djangochannelsrestframework.generics import GenericAsyncAPIConsumer
 from djangochannelsrestframework import permissions
 from djangochannelsrestframework.decorators import action, database_sync_to_async
-from djangochannelsrestframework.observer import model_observer
+from djangochannelsrestframework.observer import observer
 
 from asgiref.sync import sync_to_async
+
+from .signals import *
 
 from .serializers import *
 from .models import *
@@ -18,6 +19,7 @@ class RoomConsumer(GenericAsyncAPIConsumer):
 
     async def accept(self, **kwargs):
         await super().accept()
+        await self.handle_join_signal.subscribe()
     
     async def disconnect(self, code):
         await self.leave_room()
@@ -41,11 +43,13 @@ class RoomConsumer(GenericAsyncAPIConsumer):
         request_id_objects = await self.get_subscribing_request_ids_for(room_id)
         subscribing_request_ids = list(map(lambda obj: obj.request_id, request_id_objects))
 
-        user_in_room_data = UserInRoomSerializer(user_in_room).data
-        for request_id in subscribing_request_ids:
-            await self.reply('join', user_in_room_data, status=200, request_id=request_id)
+        join_signal.send(self.__class__, room_id=room_id, initial_position=initial_position, user_id=user_id)
 
         return {}, 200
+    
+    @observer(join_signal)
+    def handle_join_signal(self, message, observer, **kwargs):
+        print('test')
 
     @database_sync_to_async
     def create_subscribing_request_id(self, request_id, room_id):
