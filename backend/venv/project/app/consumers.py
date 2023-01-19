@@ -16,7 +16,6 @@ class RoomConsumer(GenericAsyncAPIConsumer):
 
     async def accept(self, **kwargs):
         await super().accept()
-        await self.handle_join_signal.subscribe()
     
     async def disconnect(self, code):
         await self.leave_room()
@@ -40,13 +39,7 @@ class RoomConsumer(GenericAsyncAPIConsumer):
         request_id_objects = await self.get_subscribing_request_ids_for(room_id)
         subscribing_request_ids = list(map(lambda obj: obj.request_id, request_id_objects))
 
-        join_signal.send(self.__class__, room_id=room_id, initial_position=initial_position, user_id=user_id)
-
         return {}, 200
-    
-    @observer(join_signal)
-    def handle_join_signal(self, message, observer, **kwargs):
-        print('test')
 
     @database_sync_to_async
     def create_subscribing_request_id(self, request_id, room_id):

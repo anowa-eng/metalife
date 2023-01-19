@@ -13,7 +13,7 @@ import { LocalUser } from './local-user';
 import { Position } from './position';
 import { UserPositionData } from './user-position-data';
 import { Distances } from './distances';
-import { UserRadiusService } from './user-radius.service';
+import imageSize from '@coderosh/image-size';
 
 @Component({
   selector: 'app-room-view',
@@ -21,8 +21,8 @@ import { UserRadiusService } from './user-radius.service';
   styleUrls: ['./room-view.component.scss']
 })
 export class RoomViewComponent implements OnInit {
-  untransformedData?: any[];
-  data!: UserPositionData[];
+  untransformedData!: any[];
+  data: UserPositionData[] = [];
   userProfiles!: any[];
 
   localUser: LocalUser = {
@@ -50,9 +50,14 @@ export class RoomViewComponent implements OnInit {
   ];
   _keysDown: string[] = [];
 
-  changeEventEmitter?: EventEmitter<string> = new EventEmitter();
+  changeEventEmitter: EventEmitter<string> = new EventEmitter();
 
   frames: Position[] = [];
+
+  animationId!: number;
+  shouldContinueAnimating: boolean = true;
+
+  circleRadius = 12.5;
 
   @ViewChild('roomView')
   roomView?: ElementRef;
@@ -62,15 +67,15 @@ export class RoomViewComponent implements OnInit {
     private userDataService: UserDataService,
     private webSocketService: WebSocketService,
     private windowService: WindowService,
-    private userDimensionsService: UserRadiusService
   ) {}
+
+  @HostListener('window:beforeunload')
+  onUnload() {
+    this.shouldContinueAnimating = false;
+  }
 
   getDimensions() {
     return this.windowService.getDimensions();
-  }
-
-  getUserRadius() {
-    this.userDimensionsService.elementRef = this.roomView;
   }
 
   getCenterLocation() {
@@ -85,55 +90,14 @@ export class RoomViewComponent implements OnInit {
     };
   }
 
-  async ngOnInit(): Promise<any> {
-    await this.webSocketService.init();
-    
-    // Send an initial message
-    let initialPosition = Object.assign({}, this.localUser.position);
-
-    this.webSocketService.webSocket?.subscribe();
-    this.webSocketService.webSocket?.next({
-      action: 'join',
-      initial_position: initialPosition,
-      user_id: this.localUser.id,
-      request_id: this.localUser.id
-    });
-
-    // Get initial data
-    this.roomDataService.getInitialData()
-      .subscribe((res) => {
-        let data = res.data;
-        this.untransformedData = res.data;
-
-        let transformedData = transformData(data, this.localUser.id);
-        this.data = transformedData;
-
-        this.loadProfiles();
-      });
-
-    setInterval(() => {
-      this.updateVelocities();
-      this.updateDrags();
-      this.addDrags();
-
-      if (this.localUser.velocity || this.localUser.angularVelocity)
-        this.updateLocalUser();
-      this.updateData();
-      this.frames?.push(this.localUser.position)
-
-      this.emitChangeEvents();
-    });
-
-    this.changeEventEmitter?.subscribe((eventType) => this.onLocalUserMoved(eventType));
-    this.webSocketService.webSocket?.subscribe((msg: any) => this.onMessage(msg));
-  }
-
-  loadProfiles() {
-    let ids = this.data?.map((user) => user.user_id);
-    this.userDataService.loadUserProfiles(ids)
-      .subscribe((profiles) => {
-        this.userProfiles = profiles;
-      })
+  async loadProfiles() {
+    if (this.data && this.data.length) {
+      let ids = this.data?.map((user) => user.user_id);
+      this.userDataService.loadUserProfiles(ids)
+        .subscribe((profiles) => {
+          this.userProfiles = profiles;
+        });
+    }
   }
 
   getProfileById(userInRoom: any) {
@@ -181,7 +145,7 @@ export class RoomViewComponent implements OnInit {
         let userId = Number(pair[0]),
           distance = pair[1];
 
-        isTouchingUsers[userId] = distance < diameter;
+        isTouchingUsers[userId] = distance <= diameter;
       }
       
       return isTouchingUsers;
@@ -246,25 +210,18 @@ export class RoomViewComponent implements OnInit {
 
     let idOfCollidedUser = this.userTouchedAt(newPosition);
     if (idOfCollidedUser) {
-      let collidedUser = this.untransformedData?.find((user) => user.user_id === idOfCollidedUser).data,
-        diameter = 25;
-
-      let angle = Math.atan2(
-        collidedUser.position.y - newPosition.y,
-        collidedUser.position.x - newPosition.x
-      );
-      console.log(`(user ${idOfCollidedUser}: ${angle} degrees`);
-      let position = {
-        x: this.localUser.position.x + (diameter * Math.cos(angle)),
-        y: this.localUser.position.y + (diameter * Math.sin(angle))
-      };
-
-      this.localUser.position = position;
+      this.localUserOnCollidedUpdate(idOfCollidedUser, newPosition);
     } else {
       this.localUser.position = newPosition;
     }
 
     this.localUser.direction += this.localUser.angularVelocity;
+  }
+
+  // Ignore this
+  localUserOnCollidedUpdate(idOfCollidedUser: number, newPosition: Position) {
+    let collidedUser = this.untransformedData?.find((user) => user.user_id === idOfCollidedUser).data,
+    diameter = 5;
   }
 
   updateData(this: RoomViewComponent) {
@@ -333,6 +290,60 @@ export class RoomViewComponent implements OnInit {
 
   onMessage(event: any) {
     console.log(event);
+  }
+
+  refreshRoomView = () => {
+    this.updateVelocities();
+    this.updateDrags();
+    this.addDrags();
+
+    if (this.localUser.velocity || this.localUser.angularVelocity)
+      this.updateLocalUser();
+    this.updateData();
+
+    this.frames.push(this.localUser.position)
+
+    this.emitChangeEvents();
+
+    if (this.shouldContinueAnimating)
+      requestAnimationFrame(this.refreshRoomView);
+    else
+      cancelAnimationFrame(this.animationId);
+  }
+
+  async ngOnInit(this: RoomViewComponent): Promise<any> {
+    this.data = [];
+
+    await this.webSocketService.init();
+    
+    // Send an initial message
+    let initialPosition = Object.assign({}, this.localUser.position);
+
+    this.webSocketService.webSocket?.subscribe();
+    this.webSocketService.webSocket?.next({
+      action: 'join',
+      initial_position: initialPosition,
+      user_id: this.localUser.id,
+      request_id: this.localUser.id
+    });
+
+    // Get initial data
+    this.animationId = requestAnimationFrame(this.refreshRoomView.bind(this));
+    this.roomDataService.getInitialData()
+      .subscribe((res) => {
+        let data = res.data;
+        this.untransformedData = res.data;
+
+        let transformedData = transformData(data, this.localUser.id);
+        this.data = transformedData;
+
+        this.loadProfiles();
+      });
+    
+      this.refreshRoomView();
+
+    this.changeEventEmitter?.subscribe((eventType) => this.onLocalUserMoved(eventType));
+    this.webSocketService.webSocket?.subscribe((msg: any) => this.onMessage(msg));
   }
 
 }

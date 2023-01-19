@@ -23,9 +23,9 @@
       </pattern>
     </ng-container>
   </defs>
-  <g attr.transform="rotate({{-(localUser.direction || 0)}} {{getCenterLocation().x}} {{getCenterLocation().y}})" #roomView>
+  <g attr.transform="rotate({{-(localUser.direction || 0)}} {{getCenterLocation().x}} {{getCenterLocation().y}}) scale(1)" #roomView>
     <circle
-      [attr.r]="12.5"
+      [attr.r]="circleRadius"
       [attr.cx]="userInRoom.position.x"
       [attr.cy]="userInRoom.position.y"
       attr.fill="url(#pattern-user-{{getProfileById(userInRoom)?.userId}})"
