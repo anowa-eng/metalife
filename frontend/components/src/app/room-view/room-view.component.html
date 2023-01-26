@@ -23,7 +23,7 @@
       </pattern>
     </ng-container>
   </defs>
-  <g attr.transform="rotate({{-(localUser.direction || 0)}} {{getCenterLocation().x}} {{getCenterLocation().y}}) scale(1)" #roomView>
+  <g attr.transform="rotate({{-(localUser.direction || 0)}} {{getCenterLocation().x}} {{getCenterLocation().y}})" #roomView>
     <circle
       [attr.r]="circleRadius"
       [attr.cx]="userInRoom.position.x"

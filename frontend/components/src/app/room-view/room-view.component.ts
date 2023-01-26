@@ -14,6 +14,7 @@ import { Position } from './position';
 import { UserPositionData } from './user-position-data';
 import { Distances } from './distances';
 import imageSize from '@coderosh/image-size';
+import { findCollisionPoint } from './collision-point';
 
 @Component({
   selector: 'app-room-view',
@@ -119,18 +120,18 @@ export class RoomViewComponent implements OnInit {
   }
 
   _overlappingUserPixelsAt({ x, y }: Position): any {
-    const diameter = 25;
+    const diameter = this.circleRadius * 2;
 
     let users = this.untransformedData?.filter((user) => user.user_id !== this.localUser.id);
 
     if (users) {
       function getDistanceFrom(pos: Position): number {
         let coords = {
-          x: Math.abs(x - pos.x),
-          y: Math.abs(y - pos.y)
+          x: (pos.x - x) ** 2,
+          y: (pos.y - y) ** 2
         };
 
-        let distance = coords.x + coords.y;
+        let distance = Math.sqrt(coords.x + coords.y);
 
         return distance;
       }
@@ -145,7 +146,7 @@ export class RoomViewComponent implements OnInit {
         let userId = Number(pair[0]),
           distance = pair[1];
 
-        isTouchingUsers[userId] = distance <= diameter;
+        isTouchingUsers[userId] = distance < diameter;
       }
       
       return isTouchingUsers;
@@ -218,10 +219,10 @@ export class RoomViewComponent implements OnInit {
     this.localUser.direction += this.localUser.angularVelocity;
   }
 
-  // Ignore this
   localUserOnCollidedUpdate(idOfCollidedUser: number, newPosition: Position) {
-    let collidedUser = this.untransformedData?.find((user) => user.user_id === idOfCollidedUser).data,
-    diameter = 5;
+    let collidedUser = this.untransformedData?.find((user) => user.user_id === idOfCollidedUser).data.position;
+
+    this.localUser.position = findCollisionPoint(newPosition, collidedUser);
   }
 
   updateData(this: RoomViewComponent) {
