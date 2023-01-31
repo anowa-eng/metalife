@@ -1,5 +1,5 @@
 #!/bin/bash
-APP=~/Downloads/metalife-main
+APP=/workspace/sympan
 BACKEND=$APP/backend
 FRONTEND=$APP/frontend
 
@@ -23,3 +23,9 @@ frontend() {
       ng build --base-href . --output-path $BACKEND/venv/project/app/static/ang/ --output-hashing none --watch
   fi
 }
+
+if [[ $1 == 'frontend' ]]; then
+    frontend "$2"
+elif [[ $1 == 'backend' ]]; then
+    backend "$2"
+fi
