@@ -51,9 +51,7 @@ export class RoomViewComponent implements OnInit {
   ];
   _keysDown: string[] = [];
 
-  changeEventEmitter: EventEmitter<string> = new EventEmitter();
-
-  frames: Position[] = [];
+  frames: Partial<UserPositionData>[] = [];
 
   animationId!: number;
   shouldContinueAnimating: boolean = true;
@@ -184,18 +182,6 @@ export class RoomViewComponent implements OnInit {
     }
   }
 
-  emitChangeEvents() {
-    let currentPosition = this.localUser.position,
-      prevPosition = this.localUser.hist.prevPosition,
-      currentDirection = this.localUser.direction,
-      prevDirection = this.localUser.hist.prevDirection;
-
-    if (!_.isEqual(currentPosition, prevPosition))
-      this.changeEventEmitter?.emit('positionChange');
-    if (currentDirection !== prevDirection)
-      this.changeEventEmitter?.emit('directionChange');
-  }
-
   moved() {
     return !(_.isEqual(this.localUser.position, this.localUser.hist.prevPosition))
   }
@@ -276,23 +262,16 @@ export class RoomViewComponent implements OnInit {
     });
   }
 
-  onLocalUserMoved(eventType: string) {
-    // switch (eventType) {
-    //   case 'positionChange':
-    //     this.sendPositionChangeMessage();
-    //     break;
-    //   case 'directionChange':
-    //     this.sendDirectionChangeMessage();
-    //     break;
-    //   default:
-    //     break;
-    // }
-  }
-
   onMessage(event: any) {
     console.log(event);
   }
 
+  pushData() {
+    this.frames.push({
+      position: this.localUser.position,
+      direction: this.localUser.direction
+    });
+  }
   refreshRoomView = () => {
     this.updateVelocities();
     this.updateDrags();
@@ -302,9 +281,7 @@ export class RoomViewComponent implements OnInit {
       this.updateLocalUser();
     this.updateData();
 
-    this.frames.push(this.localUser.position)
-
-    this.emitChangeEvents();
+    this.pushData();
 
     if (this.shouldContinueAnimating)
       requestAnimationFrame(this.refreshRoomView);
@@ -333,17 +310,24 @@ export class RoomViewComponent implements OnInit {
     this.roomDataService.getInitialData()
       .subscribe((res) => {
         let data = res.data;
-        this.untransformedData = res.data;
+        this.untransformedData = data;
 
-        let transformedData = transformData(data, this.localUser.id);
+        let transformedData = transformData(this.untransformedData, this.localUser.id);
         this.data = transformedData;
 
         this.loadProfiles();
       });
     
-      this.refreshRoomView();
+    this.refreshRoomView();
 
-    this.changeEventEmitter?.subscribe((eventType) => this.onLocalUserMoved(eventType));
+    setInterval(() => {
+      this.webSocketService.webSocket?.next({
+        request_id: this.localUser.id,
+        action: 'move',
+        frames: this.frames
+      });
+    }, 250);
+
     this.webSocketService.webSocket?.subscribe((msg: any) => this.onMessage(msg));
   }
 

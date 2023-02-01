@@ -1,4 +1,5 @@
 from rest_framework import serializers, fields
+from django_grpc_framework import proto_serializers
 
 from .models import *
 
@@ -33,6 +34,10 @@ class UserInRoomSerializer(serializers.ModelSerializer):
         model = UserInRoom
         fields = '__all__'
 
-        
+# GRPC serializer.
+class UserInRoomDataProtoSerializer(proto_serializers.ModelProtoSerializer):
+    class Meta:
+        model = UserInRoomData
+        fields = '__all__'
 
 
