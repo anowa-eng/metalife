@@ -18,8 +18,11 @@ from django.urls import path
 from django.conf.urls.static import static
 
 from app.views import *
+from app.services import RoomService
 
 from django.conf import settings
+
+import room_pb2_grpc
 
 urlpatterns = [
     path('', index_view),
@@ -31,3 +34,6 @@ urlpatterns = [
     # Temporary
     path('admin/', admin.site.urls)
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+def grpc_handlers(server):
+    room_pb2_grpc.add_UserInRoomDataControllerServicer_to_server(RoomService.as_servicer(), server)
