@@ -37,4 +37,4 @@ urlpatterns = [
 
 # gRPC handlers.
 def grpc_handlers(server):
-    account_pb2_grpc.add_UserInRoomDataControllerServicer_to_server(RoomService.as_servicer(), server)
+    room_pb2_grpc.add_UserInRoomDataControllerServicer_to_server(RoomService.as_servicer(), server)

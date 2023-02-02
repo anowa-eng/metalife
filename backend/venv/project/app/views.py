@@ -8,8 +8,8 @@ from .serializers import *
 import json
 
 import grpc
-from project import room_pb2
-from project import room_pb2_grpc
+import room_pb2
+import room_pb2_grpc
 
 # Create your views here.
 def index_view(req):
