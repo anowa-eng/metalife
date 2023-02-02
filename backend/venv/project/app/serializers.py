@@ -3,6 +3,8 @@ from django_grpc_framework import proto_serializers
 
 from .models import *
 
+import room_pb2
+
 class RoomSerializer(serializers.ModelSerializer):
     class Meta:
         model = Room
@@ -38,6 +40,7 @@ class UserInRoomSerializer(serializers.ModelSerializer):
 class UserInRoomDataProtoSerializer(proto_serializers.ModelProtoSerializer):
     class Meta:
         model = UserInRoomData
+        proto_class = room_pb2.UserInRoomData
         fields = '__all__'
 
 

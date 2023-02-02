@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package room;
+
+import "google/protobuf/empty.proto";
+
+service UserInRoomDataController {
+    rpc List(UserInRoomDataListRequest) returns (stream UserInRoomData) {}
+    rpc Create(UserInRoomData) returns (UserInRoomData) {}
+    rpc Retrieve(UserInRoomDataRetrieveRequest) returns (UserInRoomData) {}
+    rpc Update(UserInRoomData) returns (UserInRoomData) {}
+    rpc Destroy(UserInRoomData) returns (google.protobuf.Empty) {}
+}
+
+message UserInRoomData {
+    float x = 1;
+    float y = 2;
+    int32 direction = 3;
+}
+
+message UserInRoomDataListRequest {
+}
+
+message UserInRoomDataRetrieveRequest {
+    int64 id = 1;
+}
