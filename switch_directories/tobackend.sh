@@ -11,7 +11,7 @@ backend() {
 
     cd project || exit
 
-    python3 manage.py runserver
+    python3 manage.py runserver & python3 manage.py grpcrunserver --dev && fg
 }
 
 frontend() {
