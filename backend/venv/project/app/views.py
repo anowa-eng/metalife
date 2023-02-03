@@ -17,8 +17,8 @@ def index_view(req):
 
     # I am sorry for this.
     with grpc.insecure_channel('localhost:50051') as channel:
-        stub = room_pb2_grpc.UserControllerStub(channel)
-        for user in stub.List(room_pb2.UserListRequest()):
+        stub = room_pb2_grpc.UserInRoomDataControllerStub(channel)
+        for user in stub.List(room_pb2.UserInRoomDataListRequest()):
             print(user, end='')
 
     return render(req, 'index.html')

@@ -4,4 +4,4 @@ from .serializers import UserInRoomDataProtoSerializer
 
 class RoomService(generics.ModelService):
     queryset = UserInRoomData.objects.all()
-    serializer = UserInRoomDataProtoSerializer
+    serializer_class = UserInRoomDataProtoSerializer
