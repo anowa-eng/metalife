@@ -1,6 +1,5 @@
 #!/bin/bash
 GITPOD=$1
-echo $GITPOD
 if [[ "$GITPOD" == 1 ]]; then
   APP=/workspace/sympan
 else
