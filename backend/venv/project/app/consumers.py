@@ -10,6 +10,9 @@ from .signals import *
 from .serializers import *
 from .models import *
 
+import room_pb2_grpc
+import grpc
+
 class RoomConsumer(GenericAsyncAPIConsumer):
     queryset = Room.objects.all()
     serializer_class = RoomSerializer
