@@ -11,7 +11,7 @@ export class GRPCService {
   client;
 
   constructor() {
-    let proto = load(this.PROTO_FILE),
+    let proto = load(this.PROTO_FILE, 'proto', {}),
       service = proto.UserInRoomDataController;
     this.client = new service.Client('localhost:50051', credentials.createInsecure());
   }
