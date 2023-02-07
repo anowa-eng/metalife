@@ -29,6 +29,7 @@
     "google-protobuf": "^3.21.2",
     "grpc-web": "^1.4.2",
     "npm": "^8.16.0",
+    "os-browserify": "^0.3.0",
     "path": "^0.12.7",
     "rxjs": "~7.5.0",
     "terser": "^5.14.2",
@@ -36,6 +37,7 @@
     "zone.js": "~0.11.4"
   },
   "devDependencies": {
+    "@angular-builders/custom-webpack": "^10.0.1",
     "@angular-devkit/build-angular": "~13.3.4",
     "@angular/cli": "~13.3.4",
     "@angular/compiler-cli": "~13.3.0",
