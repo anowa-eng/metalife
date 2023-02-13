@@ -5,7 +5,7 @@ if [[ "$GITPOD" == 1 ]]; then
   APP=/workspace/sympan
 else
   APP="C:/Users/georg/Downloads/Projects/sympan"
-fin
+fi
 BACKEND="$APP/backend"
 FRONTEND="$APP/frontend"
 
@@ -22,6 +22,7 @@ backend() {
 frontend() {
   cd $FRONTEND/components/src/app/ || exit
 
+  
   ng build --base-href . --output-path $BACKEND/venv/project/app/static/ang/ --output-hashing none --watch
 }
 
