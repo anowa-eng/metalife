@@ -1,7 +1,7 @@
 #!/bin/bash
 GITPOD=$1
-echo $GITPOD
 if [[ "$GITPOD" == 1 ]]; then
+  printf "\n\n%sGitpod setting enabled.%s\n\n" "$(tput bold)" "$(tput sgr0)"
   APP=/workspace/sympan
 else
   APP="C:/Users/georg/Downloads/Projects/sympan"
@@ -22,8 +22,12 @@ backend() {
 frontend() {
   cd $FRONTEND/components/src/app/ || exit
 
-  
-  ng build --base-href . --output-path $BACKEND/venv/project/app/static/ang/ --output-hashing none --watch
+  cmd=("build" "--base-href" "." "--output-path" "$BACKEND/venv/project/app/static/ang/" "--output-hashing" "none" "--watch")
+  if [[ $GITPOD == 0 ]]; then
+    ng "${cmd[@]}"
+  else
+    npx @angular/cli "${cmd[@]}"
+  fi
 }
 
 backend & frontend && fg

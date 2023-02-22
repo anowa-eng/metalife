@@ -1,18 +1,13 @@
 #!/bin/bash
-GITPOD=$1
-echo $GITPOD
-if [[ "$GITPOD" == 1 ]]; then
-  APP=/workspace/sympan
-else
-  APP="C:/Users/georg/Downloads/Projects/sympan"
-fi
+
+APP=/workspace/sympan
 BACKEND="$APP/backend"
 FRONTEND="$APP/frontend"
 
 backend() {
     cd $BACKEND/venv || exit
 
-    source "$BACKEND/venv/bin/activate"
+    source /workspace/sympan/backend/venv/bin/activate
 
     cd project || exit
 
