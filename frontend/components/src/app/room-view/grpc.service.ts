@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
-import { load, credentials } from '@grpc/grpc-js';
-import { cwd } from 'process';
-import path from 'path';
+import * as roomGrpcWebPb from './../room_grpc_web_pb';
 
 @Injectable({
   providedIn: 'root'
 })
 export class GRPCService {
-  
+  constructor() {
+    console.log(roomGrpcWebPb);
+  }
 }
