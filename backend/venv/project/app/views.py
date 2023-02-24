@@ -10,6 +10,7 @@ import json
 # Create your views here.
 def index_view(req):
     req.session['current_room'] = 1
+
     return render(req, 'index.html')
 
 def current_room(req):

@@ -15,6 +15,7 @@ import { UserPositionData } from './user-position-data';
 import { Distances } from './distances';
 import imageSize from '@coderosh/image-size';
 import { findCollisionPoint } from './collision-point';
+import { GRPCService } from './grpc.service';
 
 @Component({
   selector: 'app-room-view',
@@ -66,6 +67,7 @@ export class RoomViewComponent implements OnInit {
     private userDataService: UserDataService,
     private webSocketService: WebSocketService,
     private windowService: WindowService,
+    private grpcService: GRPCService
   ) {}
 
   @HostListener('window:beforeunload')
@@ -235,17 +237,6 @@ export class RoomViewComponent implements OnInit {
     } else this.localUser.angularDrag = this.localUser.angularVelocity / 30;
   }
 
-  // addDrags(this: RoomViewComponent) {
-  //   let change = Math.sign(this.localUser.velocity) == -1
-  //     ? this.localUser.drag
-  //     : -this.localUser.drag;
-  //   let angularChange = Math.sign(this.localUser.angularVelocity) == -1
-  //     ? this.localUser.angularDrag
-  //     : -this.localUser.angularDrag;
-
-  //   const differentSigns = (newVelocity: number) => Math.sign(newVelocity - change) != Math.sign(newVelocity);
-
-  //   let newVelocity = this.localUser.velocity + change;
   addDrags(this: RoomViewComponent) {
     this.localUser.velocity -= this.localUser.drag;
     this.localUser.angularVelocity -= this.localUser.angularDrag;
@@ -260,10 +251,6 @@ export class RoomViewComponent implements OnInit {
       new_position: position,
       user_id: this.localUser.id
     });
-  }
-
-  onMessage(event: any) {
-    console.log(event);
   }
 
   pushData() {
@@ -321,14 +308,8 @@ export class RoomViewComponent implements OnInit {
     this.refreshRoomView();
 
     setInterval(() => {
-      this.webSocketService.webSocket?.next({
-        request_id: this.localUser.id,
-        action: 'move',
-        frames: this.frames
-      });
+      this.grpcService.client.update({ ...this.localUser.position, direction: this.localUser.direction });
     }, 250);
-
-    this.webSocketService.webSocket?.subscribe((msg: any) => this.onMessage(msg));
   }
 
 }
