@@ -1,15 +1,10 @@
 #!/bin/bash
-<<<<<<< HEAD
 GITPOD=$1
 if [[ "$GITPOD" == 1 ]]; then
   APP=/workspace/sympan
 else
   APP="C:/Users/georg/Downloads/Projects/sympan"
 fi
-=======
-
-APP=/workspace/sympan
->>>>>>> parent of 146aa446 (Add more Bash support)
 BACKEND="$APP/backend"
 FRONTEND="$APP/frontend"
 

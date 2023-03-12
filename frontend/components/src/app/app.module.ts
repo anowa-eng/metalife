@@ -7,6 +7,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { RoomViewComponent } from './room-view/room-view.component';
+import { GrpcCoreModule } from '@ngx-grpc/core';
 
 @NgModule({
   declarations: [
@@ -19,7 +20,12 @@ import { RoomViewComponent } from './room-view/room-view.component';
     FormsModule,
     ReactiveFormsModule,
 
-    AppRoutingModule
+    AppRoutingModule,
+    
+    GrpcCoreModule.forRoot(),
+    GrpcWebClientModule.forRoot({
+      
+    })
   ],
   exports: [
     AppComponent,

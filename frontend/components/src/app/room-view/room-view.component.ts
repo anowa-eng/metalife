@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, HostListener, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
 
 import { RoomDataService } from './room-data.service';
 import { UserDataService } from './../user-data.service';
@@ -6,6 +6,7 @@ import { UserDataService } from './../user-data.service';
 import { transformData } from './transform-data';
 import { WindowService } from '../window.service';
 import { WebSocketService } from './web-socket.service';
+import { GrpcService } from './grpc.service';
 
 import _ from 'lodash';
 import { LocalUser } from './local-user';
@@ -13,9 +14,7 @@ import { LocalUser } from './local-user';
 import { Position } from './position';
 import { UserPositionData } from './user-position-data';
 import { Distances } from './distances';
-import imageSize from '@coderosh/image-size';
 import { findCollisionPoint } from './collision-point';
-import { GRPCService } from './grpc.service';
 
 @Component({
   selector: 'app-room-view',
@@ -67,7 +66,7 @@ export class RoomViewComponent implements OnInit {
     private userDataService: UserDataService,
     private webSocketService: WebSocketService,
     private windowService: WindowService,
-    private grpcService: GRPCService
+    private grpcService: GrpcService
   ) {}
 
   @HostListener('window:beforeunload')
@@ -306,10 +305,6 @@ export class RoomViewComponent implements OnInit {
       });
     
     this.refreshRoomView();
-
-    setInterval(() => {
-      this.grpcService.client.update({ ...this.localUser.position, direction: this.localUser.direction });
-    }, 250);
   }
 
 }

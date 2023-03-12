@@ -7,19 +7,9 @@ from .serializers import *
 
 import json
 
-import grpc
-import room_pb2
-import room_pb2_grpc
-
 # Create your views here.
 def index_view(req):
     req.session['current_room'] = 1
-
-    # I am sorry for this.
-    with grpc.insecure_channel('localhost:50051') as channel:
-        stub = room_pb2_grpc.UserControllerStub(channel)
-        for user in stub.List(room_pb2.UserListRequest()):
-            print(user, end='')
 
     return render(req, 'index.html')
 
